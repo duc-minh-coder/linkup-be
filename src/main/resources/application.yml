@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: linkup
+  datasource:
+    url: ${DBMS_CONNECTION:jdbc:mysql://localhost:3308/linkup}
+    driverClassName: "com.mysql.cj.jdbc.Driver"
+    username: root
+    password: 1382005a
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+server:
+  post: 8080
+  servlet:
+    context-path: /
+jwt:
+  signerKey: "Rc8al3ynqFVftBEV36zVbQAFhOX10h3HkrKGVmAnOipKtNIExStX4jcmligLAcNG"
+  valid-duration: 3600 # in seconds
+  refreshable-duration: 36000
