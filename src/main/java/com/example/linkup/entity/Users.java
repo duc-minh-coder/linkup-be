@@ -17,14 +17,22 @@ public class Users {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     int id;
+
     @Column(name = "username", unique = true)
     String username;
+
     @Column(name = "password")
     String password;
+
     @Column(name = "profile_picture")
     String profile_picture;
+
     @Column(name = "created_time")
     Date created_time;
+
     @Column(name = "updated_time")
     Date updated_time;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    Profiles profile;
 }

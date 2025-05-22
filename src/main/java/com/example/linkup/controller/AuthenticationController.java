@@ -24,4 +24,5 @@ public class AuthenticationController {
                 .result(authenticationResponse)
                 .build();
     }
+
 }
