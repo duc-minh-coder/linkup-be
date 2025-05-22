@@ -32,7 +32,7 @@ public class SecurityConfig {
             "/auth/token",
 
     };
-
+    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.authorizeHttpRequests(request ->
                 request
@@ -45,7 +45,7 @@ public class SecurityConfig {
                 oauth2.jwt(jwtConfigurer ->
                                 jwtConfigurer
                                         .decoder(customJwtDecoder)
-                                        .jwtAuthenticationConverter(jwtAuthenticationConverter())
+//                                        .jwtAuthenticationConverter(jwtAuthenticationConverter())
                         ).authenticationEntryPoint(new JwtAuthenticationEntryPoint())
                 );
 
@@ -74,7 +74,8 @@ public class SecurityConfig {
     CorsFilter corsFilter() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
 
-        corsConfiguration.addAllowedOrigin("http://localhost:3000");
+//        corsConfiguration.addAllowedOrigin("http://localhost:3000");
+        corsConfiguration.addAllowedOrigin("*");
         corsConfiguration.addAllowedHeader("*");
         corsConfiguration.addAllowedMethod("*");
 

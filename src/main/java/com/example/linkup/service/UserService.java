@@ -26,7 +26,7 @@ public class UserService {
     UserMapper userMapper;
     PasswordEncoder passwordEncoder;
 
-    public UserResponse createUser(UserCreationRequest request) throws Exception {
+    public UserResponse createUser(UserCreationRequest request) {
         Users users = userMapper.userCreationRequestToUser(request);
         users.setPassword(passwordEncoder.encode(request.getPassword()));
 
