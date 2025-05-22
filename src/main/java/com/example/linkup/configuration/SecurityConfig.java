@@ -30,6 +30,7 @@ public class SecurityConfig {
     String[] PUBLIC_ENDPOINT = {
             "/users",
             "/auth/token",
+            "/auth/logout",
 
     };
     @Bean

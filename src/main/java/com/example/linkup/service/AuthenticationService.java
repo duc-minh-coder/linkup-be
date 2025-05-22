@@ -2,8 +2,10 @@ package com.example.linkup.service;
 
 import com.example.linkup.dto.request.AuthenticationRequest;
 import com.example.linkup.dto.request.IntrospectRequest;
+import com.example.linkup.dto.request.LogoutRequest;
 import com.example.linkup.dto.response.AuthenticationResponse;
 import com.example.linkup.dto.response.IntrospectResponse;
+import com.example.linkup.entity.InvalidatedToken;
 import com.example.linkup.entity.Users;
 import com.example.linkup.exception.AppException;
 import com.example.linkup.exception.ErrorCode;
@@ -128,5 +130,22 @@ public class AuthenticationService {
         }
 
         return jwsObject.serialize();
+    }
+
+    public void logout(LogoutRequest request) throws ParseException, JOSEException {
+        try {
+            var jwtToken = verifyToken(request.getToken(), true);
+            String jti = jwtToken.getJWTClaimsSet().getJWTID();
+            Date expiryTime = jwtToken.getJWTClaimsSet().getExpirationTime();
+
+            InvalidatedToken invalidatedToken = InvalidatedToken.builder()
+                    .id(jti)
+                    .expiryTime(expiryTime)
+                    .build();
+
+            invalidatedTokenRepository.save(invalidatedToken);
+        } catch (Exception e) {
+            throw new AppException(ErrorCode.TOKEN_INVALID);
+        }
     }
 }

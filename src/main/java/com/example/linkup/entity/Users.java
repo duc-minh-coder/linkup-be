@@ -33,6 +33,6 @@ public class Users {
     @Column(name = "updated_time")
     Date updated_time;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "users", cascade = CascadeType.ALL)
     Profiles profile;
 }
