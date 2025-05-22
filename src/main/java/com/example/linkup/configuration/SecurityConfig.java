@@ -31,6 +31,8 @@ public class SecurityConfig {
             "/users",
             "/auth/token",
             "/auth/logout",
+            "/auth/refresh",
+            "/auth/introspect",
 
     };
     @Bean

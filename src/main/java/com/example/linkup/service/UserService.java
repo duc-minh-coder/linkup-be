@@ -45,7 +45,7 @@ public class UserService {
                         .orElseThrow(() -> new RuntimeException("user not exist")));
     }
 
-    @PostAuthorize("returnObject.username == authentication.name")
+//    @PostAuthorize("returnObject.username == authentication.name")
     public UserResponse getMyInfo() {
         var context = SecurityContextHolder.getContext();
         String username = context.getAuthentication().getName();

@@ -1,9 +1,8 @@
 package com.example.linkup.controller;
 
-import com.example.linkup.dto.request.ApiResponse;
-import com.example.linkup.dto.request.AuthenticationRequest;
-import com.example.linkup.dto.request.LogoutRequest;
+import com.example.linkup.dto.request.*;
 import com.example.linkup.dto.response.AuthenticationResponse;
+import com.example.linkup.dto.response.IntrospectResponse;
 import com.example.linkup.service.AuthenticationService;
 import com.nimbusds.jose.JOSEException;
 import lombok.AccessLevel;
@@ -29,11 +28,27 @@ public class AuthenticationController {
                 .build();
     }
 
+    @PostMapping("/introspect")
+    ApiResponse<IntrospectResponse> introspect(@RequestBody IntrospectRequest request) {
+        IntrospectResponse introspectResponse = authenticationService.introspect(request);
+
+        return ApiResponse.<IntrospectResponse>builder()
+                .result(introspectResponse)
+                .build();
+    }
+
     @PostMapping("/logout")
     ApiResponse<Void> logout(@RequestBody LogoutRequest request) throws ParseException, JOSEException {
         authenticationService.logout(request);
 
         return ApiResponse.<Void>builder()
+                .build();
+    }
+
+    @PostMapping("/refresh")
+    ApiResponse<AuthenticationResponse> refreshToken(@RequestBody RefreshRequest request) throws ParseException, JOSEException {
+        return ApiResponse.<AuthenticationResponse>builder()
+                .result(authenticationService.refreshToken(request))
                 .build();
     }
 }

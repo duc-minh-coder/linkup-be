@@ -3,6 +3,7 @@ package com.example.linkup.service;
 import com.example.linkup.dto.request.AuthenticationRequest;
 import com.example.linkup.dto.request.IntrospectRequest;
 import com.example.linkup.dto.request.LogoutRequest;
+import com.example.linkup.dto.request.RefreshRequest;
 import com.example.linkup.dto.response.AuthenticationResponse;
 import com.example.linkup.dto.response.IntrospectResponse;
 import com.example.linkup.entity.InvalidatedToken;
@@ -16,6 +17,7 @@ import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -28,6 +30,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.UUID;
 
+@Slf4j
 @Service
 public class AuthenticationService {
     @Value("${jwt.signerKey}")
@@ -50,8 +53,8 @@ public class AuthenticationService {
         boolean isValid = true;
 
         try {
-            verifyToken(token, false);
-        } catch (AppException | JOSEException | ParseException e) {
+            var result = verifyToken(token, false);
+        } catch (JOSEException | ParseException e) {
             isValid = false;
         }
 
@@ -76,7 +79,7 @@ public class AuthenticationService {
 
         var verified = signedJWT.verify(jwsVerifier);
 
-        if (!(verified && expiryTime.after(new Date())))
+        if (!(verified && expiryTime.after(new Date())) )
             throw new AppException(ErrorCode.UNAUTHORIZED);
 
         // lấy ra jwt id từ token xong ktra xem token có trong db token bị vô hiệu k
@@ -95,7 +98,7 @@ public class AuthenticationService {
         boolean authenticated = passwordEncoder.matches(request.getPassword(), user.getPassword());
 
         if (!authenticated)
-            throw new AppException(ErrorCode.UNAUTHORIZED);
+            throw new AppException(ErrorCode.PASSWORD_INVALID);
 
         var token = generateToken(user);
 
@@ -111,11 +114,11 @@ public class AuthenticationService {
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
                 .subject(users.getUsername())
                 .issuer("ducminh")
-                .expirationTime(new Date(
-                        Instant.now()
+                .issueTime(new Date())
+                .expirationTime(new Date(Instant.now()
                                 .plus(VALID_DURATION, ChronoUnit.SECONDS)
-                                .toEpochMilli()
-                        ))
+                                .toEpochMilli())
+                )
                 .jwtID(UUID.randomUUID().toString())
                 .build();
 
@@ -125,11 +128,11 @@ public class AuthenticationService {
 
         try {
             jwsObject.sign(new MACSigner(SIGNER_KEY.getBytes()));
+
+            return jwsObject.serialize();
         } catch (JOSEException e) {
             throw new RuntimeException(e.getMessage());
         }
-
-        return jwsObject.serialize();
     }
 
     public void logout(LogoutRequest request) throws ParseException, JOSEException {
@@ -147,5 +150,29 @@ public class AuthenticationService {
         } catch (Exception e) {
             throw new AppException(ErrorCode.TOKEN_INVALID);
         }
+    }
+
+    public AuthenticationResponse refreshToken(RefreshRequest request) throws ParseException, JOSEException {
+        var jwtToken = verifyToken(request.getToken(), true);
+        String jti = jwtToken.getJWTClaimsSet().getJWTID();
+        Date expiryTime = jwtToken.getJWTClaimsSet().getExpirationTime();
+
+        InvalidatedToken invalidatedToken = InvalidatedToken.builder()
+                .id(jti)
+                .expiryTime(expiryTime)
+                .build();
+
+        invalidatedTokenRepository.save(invalidatedToken);
+
+        var username = jwtToken.getJWTClaimsSet().getSubject();
+        var user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        var token = generateToken(user);
+
+        return AuthenticationResponse.builder()
+                .token(token)
+                .isAuthenticated(true)
+                .build();
     }
 }
