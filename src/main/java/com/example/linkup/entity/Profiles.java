@@ -15,9 +15,9 @@ public class Profiles {
     @Column(name = "user_id")
     int user_id;
 
-    @Column(name = "full_name")
+    @Column(name = "profile_picture")
     @Builder.Default
-    String full_name = null;
+    String profile_picture = null;
 
     @Column(name = "bio")
     @Builder.Default

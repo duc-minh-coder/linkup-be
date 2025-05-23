@@ -16,7 +16,9 @@ public enum ErrorCode {
     UNCATEGORIZED_EXCEPTION(9999, "uncategorized exception", HttpStatus.INTERNAL_SERVER_ERROR),
     UNAUTHORIZED(1003, "NOT HAVE PERMISSION", HttpStatus.FORBIDDEN),
     TOKEN_INVALID(2000, "token is not valid", HttpStatus.BAD_REQUEST),
+    USERNAME_INVALID(2999, "username is invalid", HttpStatus.BAD_REQUEST),
     PASSWORD_INVALID(3000, "password is invalid", HttpStatus.BAD_REQUEST),
+    NAME_SHORT(1005, "name is too short", HttpStatus.BAD_REQUEST),
 
     ;
     private int code;

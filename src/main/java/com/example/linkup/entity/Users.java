@@ -24,8 +24,8 @@ public class Users {
     @Column(name = "password")
     String password;
 
-    @Column(name = "profile_picture")
-    String profile_picture;
+    @Column(name = "full_name")
+    String full_name;
 
     @Column(name = "created_time")
     Date created_time;
