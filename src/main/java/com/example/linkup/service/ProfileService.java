@@ -19,8 +19,8 @@ public class ProfileService {
     ProfileMapper profileMapper;
 
     public List<ProfileWithUserResponse> getAllProfile() {
-        List<Profiles> profilesList = profileRepository.findAll();
+        List<ProfileWithUserResponse> profilesList = profileRepository.findAllProfilesWithUserResponse();
 
-        return profilesList.stream().map(profileMapper::toProfileWithUserResponse).toList();
+        return profilesList.stream().toList();
     }
 }

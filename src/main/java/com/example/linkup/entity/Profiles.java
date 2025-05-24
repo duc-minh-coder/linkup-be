@@ -15,11 +15,11 @@ import java.util.Date;
 public class Profiles {
     @Id
     @Column(name = "user_id")
-    int user_id;
+    int userId;
 
     @Column(name = "profile_picture")
     @Builder.Default
-    String profile_picture = null;
+    String profilePicture = null;
 
     @Column(name = "bio")
     @Builder.Default
@@ -27,7 +27,7 @@ public class Profiles {
 
     @Column(name = "avatar_url")
     @Builder.Default
-    String avatar_url = null;
+    String avatarUrl = null;
 
     @Column(name = "location")
     @Builder.Default
@@ -39,7 +39,7 @@ public class Profiles {
 
     @Column(name = "updated_time")
     @Builder.Default
-    Date updated_time = null;
+    Date updatedTime = null;
 
     @OneToOne
     @JoinColumn(name = "user_id")

@@ -25,13 +25,13 @@ public class Users {
     String password;
 
     @Column(name = "full_name")
-    String full_name;
+    String fullName;
 
     @Column(name = "created_time")
-    Date created_time;
+    Date createdTime;
 
     @Column(name = "updated_time")
-    Date updated_time;
+    Date updatedTime;
 
     @OneToOne(mappedBy = "users", cascade = CascadeType.ALL)
     Profiles profile;

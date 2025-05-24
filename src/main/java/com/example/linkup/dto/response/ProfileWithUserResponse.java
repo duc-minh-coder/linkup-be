@@ -7,15 +7,26 @@ import java.util.Date;
 
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 @Builder
-@FieldDefaults(level = AccessLevel.PRIVATE)
 public class ProfileWithUserResponse {
-    private int user_id;
-    private String full_name;
-    private String avatar_Url;
-    private String location;
+    private int id;
+    private String profilePicture;
     private String bio;
+    private String avatarUrl;
+    private String location;
     private Date birthday;
-    private String profile_picture;
+    private String fullName;
+
+    public ProfileWithUserResponse(
+            int id, String profilePicture, String bio,
+            String avatarUrl, String location, Date birthday,
+            String fullName) {
+        this.id = id;
+        this.profilePicture = profilePicture;
+        this.bio = bio;
+        this.avatarUrl = avatarUrl;
+        this.location = location;
+        this.birthday = birthday;
+        this.fullName = fullName;
+    }
 }
