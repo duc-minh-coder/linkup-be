@@ -5,6 +5,8 @@ import com.example.linkup.dto.response.UserResponse;
 import com.example.linkup.entity.Users;
 import org.mapstruct.Mapper;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring")
 public interface UserMapper {
     Users userCreationRequestToUser(UserCreationRequest request);

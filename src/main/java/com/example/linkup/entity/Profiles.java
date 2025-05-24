@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.Date;
+
 @Entity
 @Data
 @Builder
@@ -33,11 +35,11 @@ public class Profiles {
 
     @Column(name = "birthday")
     @Builder.Default
-    String birthday = null;
+    Date birthday = null;
 
     @Column(name = "updated_time")
     @Builder.Default
-    String updated_time = null;
+    Date updated_time = null;
 
     @OneToOne
     @JoinColumn(name = "user_id")
