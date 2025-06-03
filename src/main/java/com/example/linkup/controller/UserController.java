@@ -2,6 +2,7 @@ package com.example.linkup.controller;
 
 import com.example.linkup.dto.request.ApiResponse;
 import com.example.linkup.dto.request.UserCreationRequest;
+import com.example.linkup.dto.request.UserUpdatePasswordRequest;
 import com.example.linkup.dto.response.UserResponse;
 import com.example.linkup.service.UserService;
 import jakarta.validation.Valid;
@@ -46,6 +47,13 @@ public class UserController {
 
         return ApiResponse.<List<UserResponse>>builder()
                 .result(userResponseList)
+                .build();
+    }
+
+    @PatchMapping("")
+    ApiResponse<UserResponse> updatePassword(@RequestBody UserUpdatePasswordRequest request) {
+        return ApiResponse.<UserResponse>builder()
+                .result(userService.updatePassword(request))
                 .build();
     }
 }

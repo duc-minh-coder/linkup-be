@@ -1,6 +1,7 @@
 package com.example.linkup.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -16,6 +17,10 @@ public class Profiles {
     @Id
     @Column(name = "user_id")
     int userId;
+
+    @Column(name = "full_name")
+    @NotNull
+    String fullName;
 
     @Column(name = "profile_picture")
     @Builder.Default

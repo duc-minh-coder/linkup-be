@@ -1,6 +1,7 @@
 package com.example.linkup.service;
 
 import com.example.linkup.dto.request.UserCreationRequest;
+import com.example.linkup.dto.request.UserUpdatePasswordRequest;
 import com.example.linkup.dto.response.UserResponse;
 import com.example.linkup.entity.Profiles;
 import com.example.linkup.entity.Users;
@@ -13,14 +14,18 @@ import com.nimbusds.jose.proc.SecurityContext;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -31,19 +36,25 @@ public class UserService {
     PasswordEncoder passwordEncoder;
 
     public UserResponse createUser(UserCreationRequest request) {
+        if (userRepository.existsByUsername(request.getUsername()))
+            throw new AppException(ErrorCode.USER_EXISTED);
+
         Users users = userMapper.userCreationRequestToUser(request);
         users.setPassword(passwordEncoder.encode(request.getPassword()));
+        users.setCreatedTime(new Date());
+        users.setUpdatedTime(new Date());
 
-        try {
-            userRepository.save(users);
+        users = userRepository.save(users);
 
-            Profiles profiles = new Profiles();
-            profiles.setUsers(users);
+        Profiles profiles = new Profiles();
+        profiles.setFullName(request.getFullName());
+        profiles.setUpdatedTime(new Date());
 
-            profileRepository.save(profiles);
-        } catch (Exception e) {
-            throw new AppException(ErrorCode.USER_EXISTED);
-        }
+        //gán mqh 2 chiều
+        users.setProfile(profiles);
+        profiles.setUsers(users);
+
+        profileRepository.save(profiles);
 
         return userMapper.userToUserResponse(users);
     }
@@ -69,5 +80,24 @@ public class UserService {
         List<Users> usersList = userRepository.findAll();
 
         return usersList.stream().map(userMapper::userToUserResponse).toList();
+    }
+
+    public UserResponse updatePassword(UserUpdatePasswordRequest request) {
+        var context = SecurityContextHolder.getContext();
+        String username = context.getAuthentication().getName();
+
+        Users users = userRepository.findByUsername(username).orElseThrow(() ->
+                new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        var truePassword = users.getPassword();
+
+        if (!Objects.equals(truePassword, request.getOldPassword()))
+            throw new AppException(ErrorCode.WRONG_PASSWORD);
+
+        users.setPassword(passwordEncoder.encode(request.getNewPassword()));
+
+        userRepository.save(users);
+
+        return userMapper.userToUserResponse(users);
     }
 }

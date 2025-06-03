@@ -24,9 +24,6 @@ public class Users {
     @Column(name = "password")
     String password;
 
-    @Column(name = "full_name")
-    String fullName;
-
     @Column(name = "created_time")
     Date createdTime;
 

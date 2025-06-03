@@ -1,15 +1,13 @@
 package com.example.linkup.controller;
 
 import com.example.linkup.dto.request.ApiResponse;
-import com.example.linkup.dto.response.ProfileWithUserResponse;
-import com.example.linkup.entity.Profiles;
+import com.example.linkup.dto.request.ProfileRequest;
+import com.example.linkup.dto.response.ProfileResponse;
 import com.example.linkup.service.ProfileService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -21,11 +19,18 @@ public class ProfileController {
     ProfileService profileService;
 
     @GetMapping("")
-    ApiResponse<List<ProfileWithUserResponse>> getAllProfile() {
-        List<ProfileWithUserResponse> profilesList = profileService.getAllProfile();
+    ApiResponse<List<ProfileResponse>> getAllProfile() {
+        List<ProfileResponse> profilesList = profileService.getAllProfile();
 
-        return ApiResponse.<List<ProfileWithUserResponse>>builder()
+        return ApiResponse.<List<ProfileResponse>>builder()
                 .result(profilesList)
+                .build();
+    }
+
+    @PatchMapping("/update-profile")
+    ApiResponse<ProfileResponse> updateProfile(@RequestBody ProfileRequest request) {
+        return ApiResponse.<ProfileResponse>builder()
+                .result(profileService.updateProfile(request))
                 .build();
     }
 }

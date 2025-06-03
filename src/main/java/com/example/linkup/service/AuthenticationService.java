@@ -56,6 +56,7 @@ public class AuthenticationService {
             var result = verifyToken(token, false);
         } catch (JOSEException | ParseException e) {
             isValid = false;
+            log.info("loii" + e.getMessage());
         }
 
         return IntrospectResponse.builder()

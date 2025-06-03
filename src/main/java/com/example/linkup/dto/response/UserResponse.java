@@ -14,7 +14,6 @@ import java.util.Date;
 public class UserResponse {
     String username;
     String password;
-    String full_name;
     Date created_time;
     Date updated_time;
 }
