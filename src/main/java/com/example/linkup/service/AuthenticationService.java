@@ -56,7 +56,6 @@ public class AuthenticationService {
             var result = verifyToken(token, false);
         } catch (JOSEException | ParseException e) {
             isValid = false;
-            log.info("loii" + e.getMessage());
         }
 
         return IntrospectResponse.builder()
@@ -64,7 +63,7 @@ public class AuthenticationService {
                 .build();
     }
 
-    private SignedJWT verifyToken(String token,boolean isRefresh) throws JOSEException, ParseException {
+    public SignedJWT verifyToken(String token,boolean isRefresh) throws JOSEException, ParseException {
         JWSVerifier jwsVerifier = new MACVerifier(SIGNER_KEY.getBytes());
 
         SignedJWT signedJWT = SignedJWT.parse(token);
@@ -136,7 +135,7 @@ public class AuthenticationService {
         }
     }
 
-    public void logout(LogoutRequest request) throws ParseException, JOSEException {
+    public void logout(LogoutRequest request) {
         try {
             var jwtToken = verifyToken(request.getToken(), true);
             String jti = jwtToken.getJWTClaimsSet().getJWTID();

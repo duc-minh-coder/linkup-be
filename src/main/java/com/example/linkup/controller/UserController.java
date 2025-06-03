@@ -5,12 +5,14 @@ import com.example.linkup.dto.request.UserCreationRequest;
 import com.example.linkup.dto.request.UserUpdatePasswordRequest;
 import com.example.linkup.dto.response.UserResponse;
 import com.example.linkup.service.UserService;
+import com.nimbusds.jose.JOSEException;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.ParseException;
 import java.util.List;
 
 @RestController
@@ -50,10 +52,15 @@ public class UserController {
                 .build();
     }
 
-    @PatchMapping("")
-    ApiResponse<UserResponse> updatePassword(@RequestBody UserUpdatePasswordRequest request) {
+    @PostMapping("/update-password")
+    ApiResponse<UserResponse> updatePassword(
+            @RequestBody UserUpdatePasswordRequest request, @RequestHeader("Authorization") String authHeader)
+            throws ParseException, JOSEException {
+
+        String token = authHeader.replace("Bearer ", "").trim();
+
         return ApiResponse.<UserResponse>builder()
-                .result(userService.updatePassword(request))
+                .result(userService.updatePassword(request, token))
                 .build();
     }
 }

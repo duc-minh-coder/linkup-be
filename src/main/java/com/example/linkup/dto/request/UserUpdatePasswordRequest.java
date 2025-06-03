@@ -16,18 +16,10 @@ import java.util.Date;
 @Builder
 public class UserUpdatePasswordRequest {
     @NotNull
-    @Size(min = 8, message = "USERNAME_INVALID")
-    private String username;
-
-    @NotNull
     @Size(min = 8, message = "PASSWORD_INVALID")
     private String oldPassword;
 
     @NotNull
     @Size(min = 8, message = "PASSWORD_INVALID")
     private String newPassword;
-
-    @Builder.Default
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private Date updated_time = new Date();
 }
