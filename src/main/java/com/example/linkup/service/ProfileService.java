@@ -12,11 +12,18 @@ import com.example.linkup.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -24,6 +31,7 @@ public class ProfileService {
     ProfileRepository profileRepository;
     UserRepository userRepository;
     ProfileMapper profileMapper;
+    CloudinaryService cloudinaryService;
 
     public List<ProfileResponse> getAllProfile() {
         List<Profiles> profilesList = profileRepository.findAll();
@@ -52,17 +60,41 @@ public class ProfileService {
         if (request.getLocation() != null)
             profiles.setLocation(request.getLocation());
 
-        if (request.getAvatarUrl() != null)
-            profiles.setAvatarUrl(request.getAvatarUrl());
-
         if (request.getBirthday() != null)
             profiles.setBirthday(request.getBirthday());
 
-        if (request.getProfilePicture() != null)
-            profiles.setProfilePicture(request.getProfilePicture());
+        profiles.setUpdatedTime(new Date());
 
         profileRepository.save(profiles);
 
         return profileMapper.profilesToProfileResponse(profiles);
+    }
+
+    public ProfileResponse updateAvatar(MultipartFile avatar) {
+        if (avatar.isEmpty())
+            throw new AppException(ErrorCode.FILE_UPLOAD_ERROR);
+
+        var context = SecurityContextHolder.getContext();
+        String username = context.getAuthentication().getName();
+
+        Users users = userRepository.findByUsername(username)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        int userId = users.getId();
+
+        Profiles profiles = profileRepository.findById(userId)
+                .orElseThrow(() -> new AppException(ErrorCode.PROFILE_NOT_EXISTED));
+
+        try {
+            String avatarUrl = cloudinaryService.uploadFile(avatar);
+
+            profiles.setAvatarUrl(avatarUrl);
+
+            profileRepository.save(profiles);
+
+            return profileMapper.profilesToProfileResponse(profiles);
+        } catch (IOException e) {
+            throw new AppException(ErrorCode.FILE_UPLOAD_ERROR);
+        }
     }
 }

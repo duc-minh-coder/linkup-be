@@ -13,9 +13,7 @@ import java.util.Date;
 public class ProfileResponse {
     private int id;
     private String fullName;
-    private String profilePicture;
     private String bio;
-    private String avatarUrl;
     private String location;
     private Date birthday;
 }

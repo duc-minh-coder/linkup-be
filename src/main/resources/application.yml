@@ -18,3 +18,7 @@ jwt:
   signerKey: "Rc8al3ynqFVftBEV36zVbQAFhOX10h3HkrKGVmAnOipKtNIExStX4jcmligLAcNG"
   valid-duration: 3600 # in seconds
   refreshable-duration: 36000
+cloudinary:
+  cloud-name: "dcvrdyzo1"
+  api-key: ${API_KEY}
+  api-secret: ${API_SECRET}

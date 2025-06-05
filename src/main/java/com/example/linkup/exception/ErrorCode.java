@@ -21,7 +21,9 @@ public enum ErrorCode {
     PASSWORD_INVALID(3000, "password is invalid", HttpStatus.BAD_REQUEST),
     NAME_SHORT(1005, "name is too short", HttpStatus.BAD_REQUEST),
     WRONG_PASSWORD(3000, "wrong password", HttpStatus.BAD_REQUEST),
-    INTERNAL_SERVER_ERROR(4004, "INTERNAL SERVER ERROR", HttpStatus.INTERNAL_SERVER_ERROR)
+    INTERNAL_SERVER_ERROR(4004, "INTERNAL SERVER ERROR", HttpStatus.INTERNAL_SERVER_ERROR),
+    FILE_UPLOAD_ERROR(4005, "file upload error", HttpStatus.BAD_REQUEST),
+
     ;
     private int code;
     private String message;

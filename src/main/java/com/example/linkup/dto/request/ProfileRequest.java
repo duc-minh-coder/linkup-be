@@ -1,5 +1,6 @@
 package com.example.linkup.dto.request;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -15,13 +16,10 @@ import java.util.Date;
 public class ProfileRequest {
     String fullName;
 
-    String profilePicture;
-
     String bio;
-
-    String avatarUrl;
 
     String location;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     Date birthday;
 }

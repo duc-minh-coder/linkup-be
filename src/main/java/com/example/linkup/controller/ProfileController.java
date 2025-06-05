@@ -7,12 +7,14 @@ import com.example.linkup.service.ProfileService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/profiles")
+@RequestMapping("/profile")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ProfileController {
@@ -31,6 +33,13 @@ public class ProfileController {
     ApiResponse<ProfileResponse> updateProfile(@RequestBody ProfileRequest request) {
         return ApiResponse.<ProfileResponse>builder()
                 .result(profileService.updateProfile(request))
+                .build();
+    }
+
+    @PostMapping(value = "/update-avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    ApiResponse<ProfileResponse> updateAvatar(@RequestParam("avatar") MultipartFile avatar) {
+        return ApiResponse.<ProfileResponse>builder()
+                .result(profileService.updateAvatar(avatar))
                 .build();
     }
 }
