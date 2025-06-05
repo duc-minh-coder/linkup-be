@@ -37,9 +37,16 @@ public class ProfileController {
     }
 
     @PostMapping(value = "/update-avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    ApiResponse<ProfileResponse> updateAvatar(@RequestParam("avatar") MultipartFile avatar) {
-        return ApiResponse.<ProfileResponse>builder()
+    ApiResponse<String> updateAvatar(@RequestParam("avatar") MultipartFile avatar) {
+        return ApiResponse.<String>builder()
                 .result(profileService.updateAvatar(avatar))
+                .build();
+    }
+
+    @PostMapping(value = "/update-profile-picture", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    ApiResponse<String> updateProfilePicture(@RequestParam("profilePicture") MultipartFile profilePicture) {
+        return ApiResponse.<String>builder()
+                .result(profileService.updateProfilePicture(profilePicture))
                 .build();
     }
 }

@@ -70,7 +70,7 @@ public class ProfileService {
         return profileMapper.profilesToProfileResponse(profiles);
     }
 
-    public ProfileResponse updateAvatar(MultipartFile avatar) {
+    public String updateAvatar(MultipartFile avatar) {
         if (avatar.isEmpty())
             throw new AppException(ErrorCode.FILE_UPLOAD_ERROR);
 
@@ -92,7 +92,35 @@ public class ProfileService {
 
             profileRepository.save(profiles);
 
-            return profileMapper.profilesToProfileResponse(profiles);
+            return "avatar has been updated!";
+        } catch (IOException e) {
+            throw new AppException(ErrorCode.FILE_UPLOAD_ERROR);
+        }
+    }
+
+    public String updateProfilePicture(MultipartFile profilePicture) {
+        if (profilePicture.isEmpty())
+            throw new AppException(ErrorCode.FILE_UPLOAD_ERROR);
+
+        var context = SecurityContextHolder.getContext();
+        String username = context.getAuthentication().getName();
+
+        Users users = userRepository.findByUsername(username)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        int userId = users.getId();
+
+        Profiles profiles = profileRepository.findById(userId)
+                .orElseThrow(() -> new AppException(ErrorCode.PROFILE_NOT_EXISTED));
+
+        try {
+            String profileUrl = cloudinaryService.uploadFile(profilePicture);
+
+            profiles.setProfilePictureUrl(profileUrl);
+
+            profileRepository.save(profiles);
+
+            return "profile picture has been updated!";
         } catch (IOException e) {
             throw new AppException(ErrorCode.FILE_UPLOAD_ERROR);
         }
