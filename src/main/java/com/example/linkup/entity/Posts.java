@@ -13,17 +13,14 @@ import java.util.List;
 @Data
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Users {
+public class Posts {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     int id;
 
-    @Column(name = "username", unique = true)
-    String username;
-
-    @Column(name = "password")
-    String password;
+    @Column(name = "content")
+    String content;
 
     @Column(name = "created_time")
     Date createdTime;
@@ -31,10 +28,10 @@ public class Users {
     @Column(name = "updated_time")
     Date updatedTime;
 
-    @OneToOne(mappedBy = "users", cascade = CascadeType.ALL)
-    Profiles profile;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "author_id")
+    Users author;
 
-    @OneToMany(mappedBy = "author")
-    List<Posts> posts;
-
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<PostMedia> postMedia;
 }
