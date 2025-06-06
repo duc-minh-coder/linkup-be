@@ -10,6 +10,8 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/post")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -21,6 +23,13 @@ public class PostController {
     public ApiResponse<PostResponse> createPost(@ModelAttribute PostRequest request) {
         return ApiResponse.<PostResponse>builder()
                 .result(postService.createPost(request))
+                .build();
+    }
+
+    @GetMapping()
+    public ApiResponse<List<PostResponse>> getAllPost() {
+        return ApiResponse.<List<PostResponse>>builder()
+                .result(postService.getAllPost())
                 .build();
     }
 }

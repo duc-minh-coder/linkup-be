@@ -5,6 +5,6 @@ import com.example.linkup.entity.PostMedia;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
-public class PostMediaMapper {
+public interface PostMediaMapper {
 
 }

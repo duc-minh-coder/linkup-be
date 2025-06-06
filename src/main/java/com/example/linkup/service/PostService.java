@@ -91,4 +91,26 @@ public class PostService {
                         .map(postMapper::postMediaToPostMediaResponse).toList())
                 .build();
     }
+
+    public List<PostResponse> getAllPost() {
+        var context = SecurityContextHolder.getContext();
+        String username = context.getAuthentication().getName();
+
+        Users user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        int authorId = user.getId();
+
+        List<Posts> postList = postRepository.findAllByAuthorId(authorId);
+
+        return postList.stream().map(post -> {
+            return PostResponse.builder()
+                    .content(post.getContent())
+                    .createdTime(post.getCreatedTime())
+                    .updatedTime(post.getUpdatedTime())
+                    .postMedia(post.getPostMedia().stream()
+                            .map(postMapper::postMediaToPostMediaResponse).toList())
+                    .build();
+        }).toList();
+    }
 }
