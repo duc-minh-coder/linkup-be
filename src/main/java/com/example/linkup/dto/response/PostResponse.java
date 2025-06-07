@@ -12,6 +12,8 @@ import java.util.List;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class PostResponse {
+    int id;
+
     int authorId;
 
     String content;

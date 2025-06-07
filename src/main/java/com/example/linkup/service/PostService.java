@@ -1,5 +1,6 @@
 package com.example.linkup.service;
 
+import com.example.linkup.dto.request.PostMediaRequest;
 import com.example.linkup.dto.request.PostRequest;
 import com.example.linkup.dto.response.PostResponse;
 import com.example.linkup.entity.PostMedia;
@@ -47,13 +48,14 @@ public class PostService {
                 .build();
 
         List<PostMedia> mediaList = new ArrayList<>();
-        List<MultipartFile> files = request.getMedia();
+        List<MultipartFile> files = request.getMediaList();
 
         if (files != null && !files.isEmpty()) {
             int index = 0;
 
             for (MultipartFile file : files) {
                 String fileUrl;
+
                 try {
                     fileUrl = cloudinaryService.uploadFile(file);
                 } catch (IOException e) {
@@ -84,6 +86,7 @@ public class PostService {
         Posts savePost = postRepository.save(post);
 
         return PostResponse.builder()
+                .id(savePost.getId())
                 .content(savePost.getContent())
                 .createdTime(savePost.getCreatedTime())
                 .updatedTime(savePost.getUpdatedTime())
@@ -103,14 +106,18 @@ public class PostService {
 
         List<Posts> postList = postRepository.findAllByAuthorId(authorId);
 
-        return postList.stream().map(post -> {
-            return PostResponse.builder()
+        return postList.stream()
+                .map(post -> PostResponse.builder()
+                    .id(post.getId())
                     .content(post.getContent())
                     .createdTime(post.getCreatedTime())
                     .updatedTime(post.getUpdatedTime())
                     .postMedia(post.getPostMedia().stream()
                             .map(postMapper::postMediaToPostMediaResponse).toList())
-                    .build();
-        }).toList();
+                    .build()).toList();
     }
+
+//    public PostResponse updatePost() {
+//
+//    }
 }

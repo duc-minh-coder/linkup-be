@@ -5,15 +5,15 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
+import java.io.File;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class PostRequest {
-    String content;
+public class PostMediaRequest {
+    MediaType mediaType;
 
-    List<MultipartFile> mediaList;
+    MultipartFile media;
 }

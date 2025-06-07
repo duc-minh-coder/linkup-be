@@ -32,4 +32,11 @@ public class PostController {
                 .result(postService.getAllPost())
                 .build();
     }
+
+//    @PatchMapping("")
+//    public ApiResponse<PostResponse> updatePost() {
+//        return ApiResponse.<PostResponse>builder()
+//                .result(postService.updatePost())
+//                .build();
+//    }
 }
