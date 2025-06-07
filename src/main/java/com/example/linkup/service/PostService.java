@@ -196,4 +196,20 @@ public class PostService {
                         .map(postMapper::postMediaToPostMediaResponse).toList())
                 .build();
     }
+
+    public void deletePost(int id) {
+        var context = SecurityContextHolder.getContext();
+        String username = context.getAuthentication().getName();
+
+        Users user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        Posts post = postRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.POST_NOT_EXISTED));
+
+        if (user.getId() != post.getAuthor().getId())
+            throw new AppException(ErrorCode.UNAUTHORIZED);
+
+        postRepository.deleteById(post.getId());
+    }
 }

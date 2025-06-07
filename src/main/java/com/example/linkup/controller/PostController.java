@@ -41,4 +41,13 @@ public class PostController {
                 .result(postService.updatePost(postId, request))
                 .build();
     }
+
+    @DeleteMapping("/{postId}")
+    public ApiResponse<String> deletePost(@PathVariable int postId) {
+        postService.deletePost(postId);
+
+        return ApiResponse.<String>builder()
+                .result("post has been deleted!")
+                .build();
+    }
 }
