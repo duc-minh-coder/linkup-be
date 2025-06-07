@@ -2,6 +2,7 @@ package com.example.linkup.controller;
 
 import com.example.linkup.dto.request.ApiResponse;
 import com.example.linkup.dto.request.PostRequest;
+import com.example.linkup.dto.request.UpdatePostRequest;
 import com.example.linkup.dto.response.PostResponse;
 import com.example.linkup.service.PostService;
 import lombok.AccessLevel;
@@ -9,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -33,10 +35,10 @@ public class PostController {
                 .build();
     }
 
-//    @PatchMapping("")
-//    public ApiResponse<PostResponse> updatePost() {
-//        return ApiResponse.<PostResponse>builder()
-//                .result(postService.updatePost())
-//                .build();
-//    }
+    @PatchMapping(value = "/{postId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ApiResponse<PostResponse> updatePost(@PathVariable int postId, @ModelAttribute UpdatePostRequest request) {
+        return ApiResponse.<PostResponse>builder()
+                .result(postService.updatePost(postId, request))
+                .build();
+    }
 }

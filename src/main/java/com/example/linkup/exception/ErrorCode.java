@@ -24,6 +24,7 @@ public enum ErrorCode {
     INTERNAL_SERVER_ERROR(4004, "INTERNAL SERVER ERROR", HttpStatus.INTERNAL_SERVER_ERROR),
     FILE_UPLOAD_ERROR(4005, "file upload error", HttpStatus.BAD_REQUEST),
     INVALID_MEDIA_TYPE(4006, "invalid media type", HttpStatus.BAD_REQUEST),
+    POST_NOT_EXISTED(1010, "post not existed", HttpStatus.NOT_FOUND),
 
     ;
     private int code;

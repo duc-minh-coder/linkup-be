@@ -10,6 +10,7 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class PostMediaResponse {
+    int id;
     String url;
     MediaType mediaType;
     short orderIndex;

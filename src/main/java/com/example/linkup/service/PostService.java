@@ -2,6 +2,7 @@ package com.example.linkup.service;
 
 import com.example.linkup.dto.request.PostMediaRequest;
 import com.example.linkup.dto.request.PostRequest;
+import com.example.linkup.dto.request.UpdatePostRequest;
 import com.example.linkup.dto.response.PostResponse;
 import com.example.linkup.entity.PostMedia;
 import com.example.linkup.entity.Posts;
@@ -117,7 +118,82 @@ public class PostService {
                     .build()).toList();
     }
 
-//    public PostResponse updatePost() {
-//
-//    }
+    public PostResponse updatePost(int postId, UpdatePostRequest request) {
+        var context = SecurityContextHolder.getContext();
+        String username = context.getAuthentication().getName();
+
+        Users user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        int authorId = user.getId();
+
+        if (authorId != request.getAuthorId())
+            throw new AppException(ErrorCode.UNAUTHORIZED);
+
+        Posts post = postRepository.findById(postId)
+                .orElseThrow(() -> new AppException(ErrorCode.POST_NOT_EXISTED));
+
+        // sửa content
+        if (request.getContent() != null) {
+            post.setContent(request.getContent());
+            post.setUpdatedTime(new Date());
+        }
+
+        List<Integer> listDeleteMediaId = request.getListDeleteMediaId();
+
+        // xoá đi những file muốn xoá
+        if (listDeleteMediaId != null && !listDeleteMediaId.isEmpty()) {
+            post.getPostMedia().removeIf(postMedia ->
+                    listDeleteMediaId.contains(postMedia.getId()));
+        }
+
+        //upload file ms
+        List<MultipartFile> mediaList = request.getMediaList();
+        if (mediaList != null && !mediaList.isEmpty()) {
+            int currentIndex = 0;
+
+            for (PostMedia lastIndex : post.getPostMedia()) {
+                currentIndex = lastIndex.getOrderIndex();
+            }
+            ++currentIndex;
+
+            for (MultipartFile file : mediaList) {
+                String fileUrl;
+
+                try {
+                    fileUrl = cloudinaryService.uploadFile(file);
+                }  catch (IOException e) {
+                    throw new AppException(ErrorCode.FILE_UPLOAD_ERROR);
+                }
+
+                String contentType = file.getContentType();
+                MediaType mediaType = null;
+                if (contentType != null) {
+                    mediaType = contentType.startsWith("video")
+                            ? MediaType.VIDEO
+                            : MediaType.IMAGE;
+                }
+
+                PostMedia media = PostMedia.builder()
+                        .url(fileUrl)
+                        .mediaType(mediaType)
+                        .orderIndex((short) currentIndex++)
+                        .post(post)
+                        .build();
+
+                post.getPostMedia().add(media);
+            }
+        }
+
+        Posts updatedPost = postRepository.save(post);
+
+        return PostResponse.builder()
+                .id(updatedPost.getId())
+                .content(updatedPost.getContent())
+                .createdTime(updatedPost.getCreatedTime())
+                .updatedTime(updatedPost.getUpdatedTime())
+                .postMedia(updatedPost.getPostMedia().stream()
+                        .map(postMapper::postMediaToPostMediaResponse).toList())
+                .build();
+    }
 }
