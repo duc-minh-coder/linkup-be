@@ -17,6 +17,4 @@ public class UpdatePostRequest {
     List<MultipartFile> mediaList;
 
     List<Integer> listDeleteMediaId;
-
-    int authorId;
 }

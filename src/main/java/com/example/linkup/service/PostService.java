@@ -125,13 +125,11 @@ public class PostService {
         Users user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
-        int authorId = user.getId();
-
-        if (authorId != request.getAuthorId())
-            throw new AppException(ErrorCode.UNAUTHORIZED);
-
         Posts post = postRepository.findById(postId)
                 .orElseThrow(() -> new AppException(ErrorCode.POST_NOT_EXISTED));
+
+        if (user.getId() != post.getAuthor().getId())
+            throw new AppException(ErrorCode.UNAUTHORIZED);
 
         // sửa content
         if (request.getContent() != null) {
