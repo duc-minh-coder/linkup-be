@@ -1,6 +1,7 @@
 package com.example.linkup.service;
 
 import com.example.linkup.dto.request.FriendShipRequest;
+import com.example.linkup.dto.request.FriendshipHandlingRequest;
 import com.example.linkup.entity.Friendships;
 import com.example.linkup.entity.Users;
 import com.example.linkup.entity.keys.KeyFriendships;
@@ -65,5 +66,40 @@ public class FriendshipService {
         friendshipRepository.save(friendships);
 
         return "đã gửi lời mời kết bạn";
+    }
+
+    public String handlingRequest(FriendshipHandlingRequest request) {
+        var context = SecurityContextHolder.getContext();
+        String username = context.getAuthentication().getName();
+
+        Users receiver = userRepository.findByUsername(username)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        Users sender = userRepository.findById(request.getSenderId())
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        int senderId = sender.getId();
+        int receiverId = receiver.getId();
+
+        if (senderId == receiverId)
+            throw new AppException(ErrorCode.INVALID_FRIEND_REQUEST_SENT);
+
+        KeyFriendships keyFriendships = new KeyFriendships(senderId, receiverId);
+        Friendships friendships = friendshipRepository.findById(keyFriendships)
+                .orElseThrow(() -> new AppException(ErrorCode.INVALID_FRIEND_REQUEST_SENT));
+
+        if (friendships.getStatus() != FriendshipStatus.PENDING)
+            throw new AppException(ErrorCode.FRIEND_REQUEST_NOT_PENDING);
+
+        friendships.setStatus(request.isAccept()
+                ? FriendshipStatus.ACCEPTED
+                : FriendshipStatus.REJECTED
+        );
+
+        friendshipRepository.save(friendships);
+
+        return request.isAccept()
+                ? "đã là bạn bè"
+                : "đã từ chối";
     }
 }

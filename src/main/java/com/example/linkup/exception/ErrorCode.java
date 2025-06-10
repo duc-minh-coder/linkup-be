@@ -27,6 +27,8 @@ public enum ErrorCode {
     POST_NOT_EXISTED(1010, "post not existed", HttpStatus.NOT_FOUND),
     INVALID_FRIEND_REQUEST_SENT(4000, "Invalid friend request sent", HttpStatus.BAD_REQUEST),
     DUPLICATE_RESOURCE(2005,"duplicate resource", HttpStatus.BAD_REQUEST),
+    FRIEND_REQUEST_NOT_FOUND(4007, "friend request not found", HttpStatus.NOT_FOUND),
+    FRIEND_REQUEST_NOT_PENDING(4008, "friend request not pending", HttpStatus.NOT_FOUND),
 
     ;
     private int code;

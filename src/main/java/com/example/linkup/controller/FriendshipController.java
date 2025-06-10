@@ -2,6 +2,7 @@ package com.example.linkup.controller;
 
 import com.example.linkup.dto.request.ApiResponse;
 import com.example.linkup.dto.request.FriendShipRequest;
+import com.example.linkup.dto.request.FriendshipHandlingRequest;
 import com.example.linkup.service.FriendshipService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -24,5 +25,12 @@ public class FriendshipController {
                 .build();
     }
 
+    @PostMapping("/handling")
+    public ApiResponse<String> handlingRequest(@RequestBody FriendshipHandlingRequest request) {
+        String message = friendshipService.handlingRequest(request);
 
+        return ApiResponse.<String>builder()
+                .result(message)
+                .build();
+    }
 }
