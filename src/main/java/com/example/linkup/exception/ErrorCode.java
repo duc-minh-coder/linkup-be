@@ -25,6 +25,8 @@ public enum ErrorCode {
     FILE_UPLOAD_ERROR(4005, "file upload error", HttpStatus.BAD_REQUEST),
     INVALID_MEDIA_TYPE(4006, "invalid media type", HttpStatus.BAD_REQUEST),
     POST_NOT_EXISTED(1010, "post not existed", HttpStatus.NOT_FOUND),
+    INVALID_FRIEND_REQUEST_SENT(4000, "Invalid friend request sent", HttpStatus.BAD_REQUEST),
+    DUPLICATE_RESOURCE(2005,"duplicate resource", HttpStatus.BAD_REQUEST),
 
     ;
     private int code;

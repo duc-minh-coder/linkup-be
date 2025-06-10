@@ -31,10 +31,19 @@ public class Users {
     @Column(name = "updated_time")
     Date updatedTime;
 
+    // profile
     @OneToOne(mappedBy = "users", cascade = CascadeType.ALL)
     Profiles profile;
 
+    // post
     @OneToMany(mappedBy = "author")
     List<Posts> posts;
+
+    // friendships
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    List<Friendships> friendsSent; // ds ng user đã gửi
+
+    @OneToMany(mappedBy = "friend", cascade = CascadeType.ALL)
+    List<Friendships> friendsReceived; // ds ng đã gửi kb cho user
 
 }
