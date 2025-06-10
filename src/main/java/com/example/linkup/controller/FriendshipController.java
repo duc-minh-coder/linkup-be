@@ -42,4 +42,5 @@ public class FriendshipController {
                 .result(message)
                 .build();
     }
+
 }
