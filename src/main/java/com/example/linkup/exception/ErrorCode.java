@@ -29,6 +29,7 @@ public enum ErrorCode {
     DUPLICATE_RESOURCE(2005,"duplicate resource", HttpStatus.BAD_REQUEST),
     FRIEND_REQUEST_NOT_FOUND(4007, "friend request not found", HttpStatus.NOT_FOUND),
     FRIEND_REQUEST_NOT_PENDING(4008, "friend request not pending", HttpStatus.NOT_FOUND),
+    FRIENDSHIP_NOT_FOUND(4010, "friendship not found", HttpStatus.NOT_FOUND),
 
     ;
     private int code;

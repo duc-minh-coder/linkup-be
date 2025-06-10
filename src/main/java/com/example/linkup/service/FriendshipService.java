@@ -102,4 +102,41 @@ public class FriendshipService {
                 ? "đã là bạn bè"
                 : "đã từ chối";
     }
+
+    public String deleteFriendship(int friendId) {
+        var context = SecurityContextHolder.getContext();
+        String username = context.getAuthentication().getName();
+
+        Users user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        Users friend = userRepository.findById(friendId)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        if (user.getId() == friend.getId())
+            throw new AppException(ErrorCode.INVALID_FRIEND_REQUEST_SENT);
+
+        //ktra qh 2 chiều
+        KeyFriendships key1 = new KeyFriendships(user.getId(), friend.getId());
+        KeyFriendships key2 = new KeyFriendships(friend.getId(), user.getId());
+
+        var friendship1 = friendshipRepository.findById(key1);
+        var friendship2 = friendshipRepository.findById(key2);
+
+        boolean deleted = false;
+
+        if (friendship1.isPresent() && friendship1.get().getStatus() == FriendshipStatus.ACCEPTED) {
+            friendshipRepository.delete(friendship1.get());
+            deleted = true;
+        }
+
+        if (friendship2.isPresent() && friendship2.get().getStatus() == FriendshipStatus.ACCEPTED) {
+            friendshipRepository.delete(friendship2.get());
+            deleted = true;
+        }
+
+        if (!deleted) throw new AppException(ErrorCode.FRIENDSHIP_NOT_FOUND);
+
+        return "đã xoá bạn bè";
+    }
 }

@@ -33,4 +33,13 @@ public class FriendshipController {
                 .result(message)
                 .build();
     }
+
+    @DeleteMapping("/delete")
+    public ApiResponse<String> deleteFriendship(@RequestParam int friendId) {
+        String message = friendshipService.deleteFriendship(friendId);
+
+        return ApiResponse.<String>builder()
+                .result(message)
+                .build();
+    }
 }
