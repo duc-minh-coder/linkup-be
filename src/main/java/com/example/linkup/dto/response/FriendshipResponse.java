@@ -15,14 +15,8 @@ import java.util.Date;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class FriendshipResponse {
-
-    KeyFriendships id;
-
-    Users user;
-
-    Users friend;
-
-    Date createdTime;
-
-    FriendshipStatus status;
+    int id;
+    String fullName;
+    String location;
+    Date birthday;
 }

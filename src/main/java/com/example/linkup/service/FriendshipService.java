@@ -2,13 +2,16 @@ package com.example.linkup.service;
 
 import com.example.linkup.dto.request.FriendShipRequest;
 import com.example.linkup.dto.request.FriendshipHandlingRequest;
+import com.example.linkup.dto.response.FriendshipResponse;
 import com.example.linkup.entity.Friendships;
+import com.example.linkup.entity.Profiles;
 import com.example.linkup.entity.Users;
 import com.example.linkup.entity.keys.KeyFriendships;
 import com.example.linkup.enums.FriendshipStatus;
 import com.example.linkup.exception.AppException;
 import com.example.linkup.exception.ErrorCode;
 import com.example.linkup.repository.FriendshipRepository;
+import com.example.linkup.repository.ProfileRepository;
 import com.example.linkup.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +19,9 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -24,6 +29,7 @@ import java.util.Date;
 public class FriendshipService {
     FriendshipRepository friendshipRepository;
     UserRepository userRepository;
+    ProfileRepository profileRepository;
 
     public String sendFriendRequest(FriendShipRequest request) {
         var context = SecurityContextHolder.getContext();
@@ -140,4 +146,37 @@ public class FriendshipService {
         return "đã xoá bạn bè";
     }
 
+    public List<FriendshipResponse> getFriends() {
+        var context = SecurityContextHolder.getContext();
+        String username = context.getAuthentication().getName();
+
+        Users user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        List<Friendships> sentFriendshipList =
+                friendshipRepository.findByIdUserIdAndStatus(user.getId(), FriendshipStatus.ACCEPTED);
+
+        List<Friendships> receiverFriendshipList =
+                friendshipRepository.findByIdFriendIdAndStatus(user.getId(), FriendshipStatus.ACCEPTED);
+
+        List<Users> friends = new ArrayList<>();
+
+        for (Friendships friendship : sentFriendshipList)
+            friends.add(friendship.getFriend());
+
+        for (Friendships friendship : receiverFriendshipList)
+            friends.add(friendship.getUser());
+
+        return friends.stream().map(friend -> {
+            Profiles profile = profileRepository.findById(friend.getId())
+                    .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+            return FriendshipResponse.builder()
+                    .id(friend.getId())
+                    .fullName(profile.getFullName())
+                    .birthday(profile.getBirthday())
+                    .location(profile.getLocation())
+                    .build();
+        }).toList();
+    }
 }

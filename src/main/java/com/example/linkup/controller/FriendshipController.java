@@ -3,11 +3,14 @@ package com.example.linkup.controller;
 import com.example.linkup.dto.request.ApiResponse;
 import com.example.linkup.dto.request.FriendShipRequest;
 import com.example.linkup.dto.request.FriendshipHandlingRequest;
+import com.example.linkup.dto.response.FriendshipResponse;
 import com.example.linkup.service.FriendshipService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/friendship")
@@ -43,4 +46,10 @@ public class FriendshipController {
                 .build();
     }
 
+    @GetMapping
+    public ApiResponse<List<FriendshipResponse>> getFriends() {
+        return ApiResponse.<List<FriendshipResponse>>builder()
+                .result(friendshipService.getFriends())
+                .build();
+    }
 }
