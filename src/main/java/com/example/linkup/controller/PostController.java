@@ -29,9 +29,9 @@ public class PostController {
     }
 
     @GetMapping()
-    public ApiResponse<List<PostResponse>> getAllPost() {
+    public ApiResponse<List<PostResponse>> getAllUrPost() {
         return ApiResponse.<List<PostResponse>>builder()
-                .result(postService.getAllPost())
+                .result(postService.getAllUrPost())
                 .build();
     }
 
@@ -48,6 +48,13 @@ public class PostController {
 
         return ApiResponse.<String>builder()
                 .result("post has been deleted!")
+                .build();
+    }
+
+    @GetMapping("/friend-posts")
+    public ApiResponse<List<PostResponse>> getPosts() {
+        return ApiResponse.<List<PostResponse>>builder()
+                .result(postService.getPosts())
                 .build();
     }
 }

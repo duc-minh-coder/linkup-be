@@ -174,7 +174,7 @@ public class FriendshipService {
             return FriendshipResponse.builder()
                     .id(friend.getId())
                     .fullName(profile.getFullName())
-                    .birthday(profile.getBirthday())
+                    .avatarUrl(profile.getAvatarUrl())
                     .location(profile.getLocation())
                     .build();
         }).toList();

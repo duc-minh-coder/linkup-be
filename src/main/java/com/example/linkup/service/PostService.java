@@ -3,7 +3,9 @@ package com.example.linkup.service;
 import com.example.linkup.dto.request.PostMediaRequest;
 import com.example.linkup.dto.request.PostRequest;
 import com.example.linkup.dto.request.UpdatePostRequest;
+import com.example.linkup.dto.response.FriendshipResponse;
 import com.example.linkup.dto.response.PostResponse;
+import com.example.linkup.entity.Friendships;
 import com.example.linkup.entity.PostMedia;
 import com.example.linkup.entity.Posts;
 import com.example.linkup.entity.Users;
@@ -33,6 +35,7 @@ public class PostService {
     UserRepository userRepository;
     CloudinaryService cloudinaryService;
     PostMapper postMapper;
+    FriendshipService friendshipService;
 
     public PostResponse createPost(PostRequest request) {
         var context = SecurityContextHolder.getContext();
@@ -96,7 +99,7 @@ public class PostService {
                 .build();
     }
 
-    public List<PostResponse> getAllPost() {
+    public List<PostResponse> getAllUrPost() {
         var context = SecurityContextHolder.getContext();
         String username = context.getAuthentication().getName();
 
@@ -209,5 +212,32 @@ public class PostService {
             throw new AppException(ErrorCode.UNAUTHORIZED);
 
         postRepository.deleteById(post.getId());
+    }
+
+    public List<PostResponse> getPosts() {
+        List<FriendshipResponse> friendshipResponseList = friendshipService.getFriends();
+
+        List<Integer> friendIds = new ArrayList<>();
+
+        for (FriendshipResponse friend : friendshipResponseList)
+            friendIds.add(friend.getId());
+
+        List<Posts> listFriendPost = new ArrayList<>();
+
+        for (int friendId : friendIds) {
+            List<Posts> postsList = postRepository.findAllByAuthorId(friendId);
+
+            listFriendPost.addAll(postsList);
+        }
+
+        return listFriendPost.stream().map(post -> PostResponse.builder()
+                .id(post.getId())
+                .authorId(post.getAuthor().getId())
+                .content(post.getContent())
+                .createdTime(post.getCreatedTime())
+                .updatedTime(post.getUpdatedTime())
+                .postMedia(post.getPostMedia().stream()
+                        .map(postMapper::postMediaToPostMediaResponse).toList())
+                .build()).toList();
     }
 }

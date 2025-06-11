@@ -17,6 +17,6 @@ import java.util.Date;
 public class FriendshipResponse {
     int id;
     String fullName;
+    String avatarUrl;
     String location;
-    Date birthday;
 }
