@@ -46,4 +46,7 @@ public class Users {
     @OneToMany(mappedBy = "friend", cascade = CascadeType.ALL)
     List<Friendships> friendsReceived; // ds ng đã gửi kb cho user
 
+    // PostLike
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    List<PostLikes> postLikes;
 }

@@ -34,4 +34,7 @@ public class Posts {
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     List<PostMedia> postMedia;
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    List<PostLikes> likeList;
 }
