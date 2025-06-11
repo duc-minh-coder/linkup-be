@@ -17,6 +17,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -39,7 +40,6 @@ public class PostLikeService {
         KeyPostLikes key = new KeyPostLikes(user.getId(), post.getId());
         var existing = postLikeRepository.findById(key);
 
-        PostLikes postLikes = null;
         if (existing.isPresent()) {
             postLikeRepository.deleteById(key);
 
@@ -49,7 +49,7 @@ public class PostLikeService {
                     .createdTime(new Date())
                     .build();
         } else {
-            postLikes = PostLikes.builder()
+            PostLikes postLikes = PostLikes.builder()
                     .id(key)
                     .user(user)
                     .post(post)
@@ -64,5 +64,13 @@ public class PostLikeService {
                     .createdTime(postLikes.getCreatedTime())
                     .build();
         }
+    }
+
+    public List<Integer> getLikesByPost(int postId) {
+        List<PostLikes> postLikesList = postLikeRepository.findAllByPostId(postId);
+
+        return postLikesList.stream()
+                .map(postLike -> postLike.getUser().getId())
+                .toList();
     }
 }
