@@ -8,36 +8,38 @@ import java.util.Date;
 import java.util.List;
 
 @Entity
-@NoArgsConstructor
-@AllArgsConstructor
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Posts {
+public class Comments {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     int id;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "post_id")
+    Posts post;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "author_id")
+    Users author;
+
     @Column(name = "content")
     String content;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_id")
+    Comments parentComment;
+
+    @OneToMany(mappedBy = "parentComment", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<Comments> replies;
 
     @Column(name = "created_time")
     Date createdTime;
 
     @Column(name = "updated_time")
     Date updatedTime;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "author_id")
-    Users author;
-
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
-    List<PostMedia> postMedia;
-
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
-    List<PostLikes> likeList;
-
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
-    List<Comments> commentList;
 }
