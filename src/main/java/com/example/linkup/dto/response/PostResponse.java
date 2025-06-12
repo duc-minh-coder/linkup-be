@@ -23,6 +23,8 @@ public class PostResponse {
 
     List<UserLikeResponse> userLikes;
 
+    List<CommentResponse> comments;
+
     Date createdTime;
 
     Date updatedTime;

@@ -37,6 +37,7 @@ public class PostService {
     PostMapper postMapper;
     FriendshipService friendshipService;
     PostLikeService postLikeService;
+    CommentService commentService;
 
     public PostResponse createPost(PostRequest request) {
         var context = SecurityContextHolder.getContext();
@@ -243,6 +244,7 @@ public class PostService {
                 .postMedia(post.getPostMedia().stream()
                         .map(postMapper::postMediaToPostMediaResponse).toList())
                 .userLikes(postLikeService.getLikesByPost(post.getId()))
+                .comments(commentService.getCommentsOfPost(post.getId()))
                 .build()).toList();
     }
 }

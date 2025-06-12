@@ -19,6 +19,8 @@ public class CommentResponse {
     int id;
     int postId;
     int authorId;
+    String avatarUrl;
+    String fullName;
     String content;
     Integer parentCommentId;
     Date updatedTime;

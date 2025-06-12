@@ -7,10 +7,9 @@ import com.example.linkup.service.CommentService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/comment")
@@ -23,6 +22,13 @@ public class CommentController {
     public ApiResponse<CommentResponse> createComment(@RequestBody CommentRequest request) {
         return ApiResponse.<CommentResponse>builder()
                 .result(commentService.createComment(request))
+                .build();
+    }
+
+    @GetMapping("/{postId}")
+    public ApiResponse<List<CommentResponse>> getCommentsOfPost(@PathVariable int postId) {
+        return ApiResponse.<List<CommentResponse>>builder()
+                .result(commentService.getCommentsOfPost(postId))
                 .build();
     }
 }
