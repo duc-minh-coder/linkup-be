@@ -1,14 +1,17 @@
 package com.example.linkup.service;
 
 import com.example.linkup.dto.response.PostLikeResponse;
+import com.example.linkup.dto.response.UserLikeResponse;
 import com.example.linkup.entity.PostLikes;
 import com.example.linkup.entity.Posts;
+import com.example.linkup.entity.Profiles;
 import com.example.linkup.entity.Users;
 import com.example.linkup.entity.keys.KeyPostLikes;
 import com.example.linkup.exception.AppException;
 import com.example.linkup.exception.ErrorCode;
 import com.example.linkup.repository.PostLikeRepository;
 import com.example.linkup.repository.PostRepository;
+import com.example.linkup.repository.ProfileRepository;
 import com.example.linkup.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +29,7 @@ public class PostLikeService {
     PostLikeRepository postLikeRepository;
     UserRepository userRepository;
     PostRepository postRepository;
+    ProfileRepository profileRepository;
 
     public PostLikeResponse toggleLike(int postId) {
         var context = SecurityContextHolder.getContext();
@@ -66,11 +70,18 @@ public class PostLikeService {
         }
     }
 
-    public List<Integer> getLikesByPost(int postId) {
+    public List<UserLikeResponse> getLikesByPost(int postId) {
         List<PostLikes> postLikesList = postLikeRepository.findAllByPostId(postId);
 
-        return postLikesList.stream()
-                .map(postLike -> postLike.getUser().getId())
-                .toList();
+        return postLikesList.stream().map(postLike -> {
+                    Profiles userProfile = profileRepository.findById(postLike.getUser().getId())
+                            .orElseThrow(() -> new AppException(ErrorCode.PROFILE_NOT_EXISTED));
+
+                    return UserLikeResponse.builder()
+                            .id(userProfile.getUserId())
+                            .fullName(userProfile.getFullName())
+                            .build();
+                }
+        ).toList();
     }
 }

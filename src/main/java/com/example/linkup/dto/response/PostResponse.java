@@ -1,5 +1,6 @@
 package com.example.linkup.dto.response;
 
+import com.example.linkup.entity.Users;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -19,6 +20,8 @@ public class PostResponse {
     String content;
 
     List<PostMediaResponse> postMedia;
+
+    List<UserLikeResponse> userLikes;
 
     Date createdTime;
 

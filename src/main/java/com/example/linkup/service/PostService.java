@@ -36,6 +36,7 @@ public class PostService {
     CloudinaryService cloudinaryService;
     PostMapper postMapper;
     FriendshipService friendshipService;
+    PostLikeService postLikeService;
 
     public PostResponse createPost(PostRequest request) {
         var context = SecurityContextHolder.getContext();
@@ -92,6 +93,7 @@ public class PostService {
         return PostResponse.builder()
                 .id(savePost.getId())
                 .content(savePost.getContent())
+                .userLikes(null)
                 .createdTime(savePost.getCreatedTime())
                 .updatedTime(savePost.getUpdatedTime())
                 .postMedia(savePost.getPostMedia().stream()
@@ -118,6 +120,7 @@ public class PostService {
                     .updatedTime(post.getUpdatedTime())
                     .postMedia(post.getPostMedia().stream()
                             .map(postMapper::postMediaToPostMediaResponse).toList())
+                    .userLikes(postLikeService.getLikesByPost(post.getId()))
                     .build()).toList();
     }
 
@@ -195,6 +198,7 @@ public class PostService {
                 .updatedTime(updatedPost.getUpdatedTime())
                 .postMedia(updatedPost.getPostMedia().stream()
                         .map(postMapper::postMediaToPostMediaResponse).toList())
+                .userLikes(postLikeService.getLikesByPost(updatedPost.getId()))
                 .build();
     }
 
@@ -238,6 +242,7 @@ public class PostService {
                 .updatedTime(post.getUpdatedTime())
                 .postMedia(post.getPostMedia().stream()
                         .map(postMapper::postMediaToPostMediaResponse).toList())
+                .userLikes(postLikeService.getLikesByPost(post.getId()))
                 .build()).toList();
     }
 }

@@ -2,6 +2,8 @@ package com.example.linkup.controller;
 
 import com.example.linkup.dto.request.ApiResponse;
 import com.example.linkup.dto.response.PostLikeResponse;
+import com.example.linkup.dto.response.UserLikeResponse;
+import com.example.linkup.entity.Users;
 import com.example.linkup.service.PostLikeService;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -26,8 +28,8 @@ public class PostLikeController {
     }
 
     @PostMapping("/post")
-    public ApiResponse<List<Integer>> getLikesByPost(@RequestParam int postId) {
-        return ApiResponse.<List<Integer>>builder()
+    public ApiResponse<List<UserLikeResponse>> getLikesByPost(@RequestParam int postId) {
+        return ApiResponse.<List<UserLikeResponse>>builder()
                 .result(postLikeService.getLikesByPost(postId))
                 .build();
     }
