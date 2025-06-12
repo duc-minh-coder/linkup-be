@@ -122,6 +122,7 @@ public class PostService {
                     .postMedia(post.getPostMedia().stream()
                             .map(postMapper::postMediaToPostMediaResponse).toList())
                     .userLikes(postLikeService.getLikesByPost(post.getId()))
+                    .comments(commentService.getCommentsOfPost(post.getId()))
                     .build()).toList();
     }
 
