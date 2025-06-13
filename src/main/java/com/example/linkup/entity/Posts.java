@@ -29,6 +29,10 @@ public class Posts {
     Date updatedTime;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "original_post_id")
+    Posts originalPost;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id")
     Users author;
 

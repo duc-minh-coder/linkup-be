@@ -248,4 +248,53 @@ public class PostService {
                 .comments(commentService.getCommentsOfPost(post.getId()))
                 .build()).toList();
     }
+
+    public PostResponse sharePost(int postId) {
+        var context = SecurityContextHolder.getContext();
+        String username = context.getAuthentication().getName();
+
+        Users user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        Posts post = postRepository.findById(postId)
+                .orElseThrow(() -> new AppException(ErrorCode.POST_NOT_EXISTED));
+
+        Posts sharePost = Posts.builder()
+                .author(user)
+                .content(post.getContent())
+                .originalPost(post)
+                .updatedTime(new Date())
+                .createdTime(new Date())
+                .build();
+
+        List<PostMedia> shareMediaList = new ArrayList<>();
+
+        for (PostMedia media : post.getPostMedia()) {
+            PostMedia postMediaItem = PostMedia.builder()
+                    .url(media.getUrl())
+                    .mediaType(media.getMediaType())
+                    .orderIndex(media.getOrderIndex())
+                    .post(post)
+                    .build();
+
+            shareMediaList.add(postMediaItem);
+        }
+
+        sharePost.setPostMedia(shareMediaList);
+
+        Posts savedPost = postRepository.save(sharePost);
+
+        return PostResponse.builder()
+                .id(savedPost.getId())
+                .content(savedPost.getContent())
+                .authorId(savedPost.getAuthor().getId())
+                .createdTime(savedPost.getCreatedTime())
+                .updatedTime(savedPost.getUpdatedTime())
+                .originalPostId(post.getId())
+                .postMedia(savedPost.getPostMedia().stream()
+                        .map(postMapper::postMediaToPostMediaResponse).toList())
+                .userLikes(postLikeService.getLikesByPost(savedPost.getId()))
+                .comments(commentService.getCommentsOfPost(savedPost.getId()))
+                .build();
+    }
 }

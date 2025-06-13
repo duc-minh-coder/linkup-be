@@ -19,6 +19,8 @@ public class PostResponse {
 
     String content;
 
+    Integer originalPostId;
+
     List<PostMediaResponse> postMedia;
 
     List<UserLikeResponse> userLikes;

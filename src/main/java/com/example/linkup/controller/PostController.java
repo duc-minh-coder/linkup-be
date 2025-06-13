@@ -57,4 +57,11 @@ public class PostController {
                 .result(postService.getPosts())
                 .build();
     }
+
+    @PostMapping("/share")
+    public ApiResponse<PostResponse> sharePost(@RequestParam int postId) {
+        return ApiResponse.<PostResponse>builder()
+                .result(postService.sharePost(postId))
+                .build();
+    }
 }

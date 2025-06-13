@@ -26,7 +26,7 @@ public class PostMedia {
     @Column(name = "order_index")
     short orderIndex;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id", referencedColumnName = "id")
     Posts post;
 }
