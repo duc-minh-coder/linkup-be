@@ -1,6 +1,5 @@
 package com.example.linkup.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -54,4 +53,11 @@ public class Users {
     // comment
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
     List<Comments> commentList;
+
+    // message
+    @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    List<Messages> sentMessages;
+
+    @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    List<Messages> receivedMessages;
 }
