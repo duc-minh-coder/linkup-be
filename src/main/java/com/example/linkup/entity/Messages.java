@@ -30,7 +30,7 @@ public class Messages {
     String content;
 
     @Column(name = "created_time")
-    Date CreatedTime;
+    Date createdTime;
 
     @Column(name = "isRead")
     boolean isRead;

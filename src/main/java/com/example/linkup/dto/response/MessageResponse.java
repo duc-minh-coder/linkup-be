@@ -23,7 +23,7 @@ public class MessageResponse {
     int receiverId;
     String receiverName;
     String content;
-    Date CreatedTime;
+    Date createdTime;
     boolean isRead;
     MessageType type;
 }

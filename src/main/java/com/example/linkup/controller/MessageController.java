@@ -32,4 +32,20 @@ public class MessageController {
                 .result(messageService.getListConversation())
                 .build();
     }
+
+    @GetMapping("/{otherUserId}")
+    public ApiResponse<List<MessageResponse>> getConversation(@PathVariable int otherUserId) {
+        return ApiResponse.<List<MessageResponse>>builder()
+                .result(messageService.getConversation(otherUserId))
+                .build();
+    }
+
+    @DeleteMapping
+    public ApiResponse<Void> deleteConversation(@RequestParam int otherUserId) {
+        messageService.deleteConversation(otherUserId);
+
+        return ApiResponse.<Void>builder().build();
+    }
+
+
 }

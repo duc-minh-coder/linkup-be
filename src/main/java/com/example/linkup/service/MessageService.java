@@ -18,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
@@ -44,7 +45,7 @@ public class MessageService {
                 .receiver(receiver)
                 .content(request.getContent())
                 .isRead(false)
-                .CreatedTime(new Date())
+                .createdTime(new Date())
                 .build();
 
         Messages savedMessage = messageRepository.save(message);
@@ -59,7 +60,7 @@ public class MessageService {
                 .content(savedMessage.getContent())
                 .type(MessageType.CHAT)
                 .isRead(false)
-                .CreatedTime(new Date())
+                .createdTime(new Date())
                 .build();
     }
 
@@ -88,5 +89,44 @@ public class MessageService {
         }).toList();
     }
 
+    public List<MessageResponse> getConversation(int otherUserId) {
+        var context = SecurityContextHolder.getContext();
+        String username = context.getAuthentication().getName();
 
+        Users user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        Users otherUser = userRepository.findById(otherUserId)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        List<Messages> messageList =
+                messageRepository.findConversationBetweenUsers(user.getId(), otherUser.getId());
+
+        return messageList.stream().map(message ->
+                MessageResponse.builder()
+                        .id(message.getId())
+                        .senderId(message.getSender().getId())
+                        .senderName(message.getSender().getProfile().getFullName())
+                        .receiverId(message.getReceiver().getId())
+                        .receiverName(message.getReceiver().getProfile().getFullName())
+                        .content(message.getContent())
+                        .type(MessageType.CHAT)
+                        .createdTime(message.getCreatedTime())
+                        .isRead(message.isRead())
+                    .build()
+                ).toList();
+    }
+
+    public void deleteConversation(int otherUserId) {
+        var context = SecurityContextHolder.getContext();
+        String username = context.getAuthentication().getName();
+
+        Users user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        Users otherUser = userRepository.findById(otherUserId)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        messageRepository.deleteConversation(user.getId(), otherUser.getId());
+    }
 }
