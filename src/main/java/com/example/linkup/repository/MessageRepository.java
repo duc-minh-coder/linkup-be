@@ -2,6 +2,8 @@ package com.example.linkup.repository;
 
 import com.example.linkup.entity.Messages;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -32,4 +34,11 @@ public interface MessageRepository extends JpaRepository<Messages, Integer> {
             "(m.sender.id = :userId AND m.receiver.id = :otherUserId) OR " +
             "(m.receiver.id = :userId AND m.sender.id = :otherUserId)")
     void deleteConversation(int userId, int otherUserId);
+
+    // lấy ra tn theo trang
+    @Query("SELECT m FROM Messages m WHERE" +
+            "(m.sender.id = :userId AND m.receiver.id = :otherUserId) OR " +
+            "(m.sender.id = :otherUserId AND m.receiver.id = :userId)" +
+            "ORDER BY m.createdTime DESC")
+    Page<Messages> findConversationBetweenUserWithPaging(int userId, int otherUserId, Pageable pageable);
 }

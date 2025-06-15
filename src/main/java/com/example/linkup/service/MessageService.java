@@ -15,6 +15,9 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -129,4 +132,35 @@ public class MessageService {
 
         messageRepository.deleteConversation(user.getId(), otherUser.getId());
     }
+
+    public Page<MessageResponse> getConversationWithPaging(int otherUserId, int page, int size) {
+        var context = SecurityContextHolder.getContext();
+        String username = context.getAuthentication().getName();
+
+        Users user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        Users otherUser = userRepository.findById(otherUserId)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<Messages> messagePage =
+                messageRepository.findConversationBetweenUserWithPaging(user.getId(), otherUser.getId(), pageable);
+
+        return messagePage.map(message ->
+                MessageResponse.builder()
+                        .id(message.getId())
+                        .senderId(message.getSender().getId())
+                        .senderName(message.getSender().getProfile().getFullName())
+                        .receiverId(message.getReceiver().getId())
+                        .receiverName(message.getReceiver().getProfile().getFullName())
+                        .content(message.getContent())
+                        .type(MessageType.CHAT)
+                        .createdTime(message.getCreatedTime())
+                        .isRead(message.isRead())
+                .build());
+    }
+
+
 }
