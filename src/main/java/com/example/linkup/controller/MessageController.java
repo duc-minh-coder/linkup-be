@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 import org.springframework.data.domain.Page;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,11 +21,21 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class MessageController {
     MessageService messageService;
+    SimpMessagingTemplate messagingTemplate;
 
-    @PostMapping("/post")
+    @PostMapping("/send")
     public ApiResponse<MessageResponse> sendMessage(@RequestBody MessageRequest request) {
+        MessageResponse message = messageService.sendMessage(request);
+
+        // gửi qua ws
+        messagingTemplate.convertAndSendToUser(
+                String.valueOf(request.getReceiverId()),
+                "/queue/messages",
+                message
+        );
+
         return ApiResponse.<MessageResponse>builder()
-                .result(messageService.sendMessage(request))
+                .result(message)
                 .build();
     }
 
@@ -37,14 +48,14 @@ public class MessageController {
     }
 
     @GetMapping("/conversation/{otherUserId}")
-    // chi tiết 1 cuộc hội thoại
+    // chi tiết 1 cuộc hội thoại vs 1 otherUser
     public ApiResponse<List<MessageResponse>> getConversation(@PathVariable int otherUserId) {
         return ApiResponse.<List<MessageResponse>>builder()
                 .result(messageService.getConversation(otherUserId))
                 .build();
     }
 
-    @DeleteMapping
+    @DeleteMapping("/conversation/delete")
     public ApiResponse<Void> deleteConversation(@RequestParam int otherUserId) {
         messageService.deleteConversation(otherUserId);
 
