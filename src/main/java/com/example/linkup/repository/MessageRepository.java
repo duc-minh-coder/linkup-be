@@ -36,9 +36,14 @@ public interface MessageRepository extends JpaRepository<Messages, Integer> {
     void deleteConversation(int userId, int otherUserId);
 
     // lấy ra tn theo trang
-    @Query("SELECT m FROM Messages m WHERE" +
+    @Query("SELECT m FROM Messages m WHERE " +
             "(m.sender.id = :userId AND m.receiver.id = :otherUserId) OR " +
             "(m.sender.id = :otherUserId AND m.receiver.id = :userId)" +
             "ORDER BY m.createdTime DESC")
     Page<Messages> findConversationBetweenUserWithPaging(int userId, int otherUserId, Pageable pageable);
+
+    // đếm số tin nhắn chưa đọc
+    @Query("SELECT COUNT(m) FROM Messages m WHERE " +
+            "m.receiver.id = :otherUserId AND m.isRead = false")
+    long countUnreadMessages(int otherUserId);
 }

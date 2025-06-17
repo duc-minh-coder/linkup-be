@@ -162,5 +162,13 @@ public class MessageService {
                 .build());
     }
 
+    public long getUnReadCount() {
+        var context = SecurityContextHolder.getContext();
+        String username = context.getAuthentication().getName();
 
+        Users user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        return messageRepository.countUnreadMessages(user.getId());
+    }
 }

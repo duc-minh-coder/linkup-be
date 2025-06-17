@@ -70,4 +70,11 @@ public class MessageController {
                 .result(messageService.getConversationWithPaging(otherUserId, page, size))
                 .build();
     }
+
+    @GetMapping("/unread-count")
+    public ApiResponse<Long> getUnReadCount() {
+        return ApiResponse.<Long>builder()
+                .result(messageService.getUnReadCount())
+                .build();
+    }
 }
