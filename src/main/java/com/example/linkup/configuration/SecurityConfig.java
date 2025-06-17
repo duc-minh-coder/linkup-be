@@ -33,7 +33,7 @@ public class SecurityConfig {
             "/auth/logout",
             "/auth/refresh",
             "/auth/introspect",
-            "/profiles"
+            "/profiles"      // All WebSocket sub-paths
     };
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
@@ -78,6 +78,8 @@ public class SecurityConfig {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
 
         corsConfiguration.addAllowedOrigin("http://localhost:3000");
+        corsConfiguration.addAllowedOrigin("http://127.0.0.1:5500");
+        corsConfiguration.setAllowCredentials(true);
         corsConfiguration.addAllowedHeader("*");
         corsConfiguration.addAllowedMethod("*");
 

@@ -42,16 +42,33 @@ public class WebSocketController {
 
     @MessageMapping("/chat.typing")
     public void handleTyping(@Payload TypingRequest request) {
-        MessageResponse messageResponse = MessageResponse.builder()
+        MessageResponse typingResponse = MessageResponse.builder()
                 .senderId(request.getSenderId())
                 .receiverId(request.getReceiverId())
+                .type(MessageType.TYPING)
                 .content("is typing...")
                 .build();
 
         messagingTemplate.convertAndSendToUser(
                 String.valueOf(request.getReceiverId()),
                 "/queue/typing",
-                messageResponse
+                typingResponse
+        );
+    }
+
+    @MessageMapping("/chat.stopTyping")
+    public void handleStopTyping(@Payload TypingRequest typingRequest) {
+        MessageResponse stopTypingResponse = MessageResponse.builder()
+                .senderId(typingRequest.getSenderId())
+                .receiverId(typingRequest.getReceiverId())
+                .type(MessageType.STOP_TYPING)
+                .content("stopped typing")
+                .build();
+
+        messagingTemplate.convertAndSendToUser(
+                String.valueOf(typingRequest.getReceiverId()),
+                "/queue/typing",
+                stopTypingResponse
         );
     }
 }
