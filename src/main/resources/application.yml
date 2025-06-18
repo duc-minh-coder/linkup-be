@@ -17,7 +17,7 @@ spring:
 server:
   post: 8080
   servlet:
-    context-path: /
+    context-path: /api
 jwt:
   signerKey: "Rc8al3ynqFVftBEV36zVbQAFhOX10h3HkrKGVmAnOipKtNIExStX4jcmligLAcNG"
   valid-duration: 3600 # in seconds
