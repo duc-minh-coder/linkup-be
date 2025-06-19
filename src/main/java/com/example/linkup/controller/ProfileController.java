@@ -20,6 +20,15 @@ import java.util.List;
 public class ProfileController {
     ProfileService profileService;
 
+    @GetMapping("/user")
+    ApiResponse<ProfileResponse> getProfile() {
+        ProfileResponse profilesList = profileService.getProfile();
+
+        return ApiResponse.<ProfileResponse>builder()
+                .result(profilesList)
+                .build();
+    }
+
     @GetMapping("")
     ApiResponse<List<ProfileResponse>> getAllProfile() {
         List<ProfileResponse> profilesList = profileService.getAllProfile();

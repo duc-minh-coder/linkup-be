@@ -33,6 +33,19 @@ public class ProfileService {
     ProfileMapper profileMapper;
     CloudinaryService cloudinaryService;
 
+    public ProfileResponse getProfile() {
+        var context = SecurityContextHolder.getContext();
+        String username = context.getAuthentication().getName();
+
+        Users users = userRepository.findByUsername(username)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        return ProfileResponse.builder()
+                .fullName(users.getProfile().getFullName())
+                .avatarUrl(users.getProfile().getAvatarUrl())
+                .build();
+    }
+
     public List<ProfileResponse> getAllProfile() {
         List<Profiles> profilesList = profileRepository.findAll();
 

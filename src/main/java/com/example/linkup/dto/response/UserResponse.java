@@ -13,5 +13,6 @@ import java.util.Date;
 @Builder
 public class UserResponse {
     String username;
-    String password;
+    Date createdTime;
+//    String password;
 }

@@ -93,6 +93,8 @@ public class PostService {
 
         return PostResponse.builder()
                 .id(savePost.getId())
+                .authorName(user.getProfile().getFullName())
+                .authorAvatarUrl(user.getProfile().getAvatarUrl())
                 .content(savePost.getContent())
                 .userLikes(null)
                 .createdTime(savePost.getCreatedTime())

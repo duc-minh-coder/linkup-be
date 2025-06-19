@@ -46,15 +46,18 @@ public class UserService {
         if (userRepository.existsByUsername(request.getUsername()))
             throw new AppException(ErrorCode.USER_EXISTED);
 
-        Users users = userMapper.userCreationRequestToUser(request);
+        Users users = Users.builder()
+                .username(request.getUsername())
+                .createdTime(new Date())
+                .updatedTime(new Date())
+                .build();
         users.setPassword(passwordEncoder.encode(request.getPassword()));
-        users.setCreatedTime(new Date());
-        users.setUpdatedTime(new Date());
 
         users = userRepository.save(users);
 
         Profiles profiles = new Profiles();
         profiles.setFullName(request.getFullName());
+        profiles.setAvatarUrl("https://res.cloudinary.com/dcvrdyzo1/image/upload/v1750326357/tj2seoxw5otvcfwnxhdi.png");
         profiles.setUpdatedTime(new Date());
 
         //gán mqh 2 chiều
@@ -63,13 +66,20 @@ public class UserService {
 
         profileRepository.save(profiles);
 
-        return userMapper.userToUserResponse(users);
+        return UserResponse.builder()
+                .username(users.getUsername())
+                .createdTime(new Date())
+                .build();
     }
 
     public UserResponse getUser(int userId) {
-        return userMapper.userToUserResponse(
-                userRepository.findById(userId)
-                        .orElseThrow(() -> new RuntimeException("user not exist")));
+        Users user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("user not exist"));
+
+        return UserResponse.builder()
+                .username(user.getUsername())
+                .createdTime(user.getCreatedTime())
+                .build();
     }
 
 //    @PostAuthorize("returnObject.username == authentication.name")
@@ -80,13 +90,21 @@ public class UserService {
         Users users = userRepository.findByUsername(username).orElseThrow(() ->
                 new AppException(ErrorCode.USER_NOT_EXISTED));
 
-        return userMapper.userToUserResponse(users);
+        return UserResponse.builder()
+                .username(users.getUsername())
+                .createdTime(users.getCreatedTime())
+                .build();
     }
 
     public List<UserResponse> getAllUser() {
         List<Users> usersList = userRepository.findAll();
 
-        return usersList.stream().map(userMapper::userToUserResponse).toList();
+        return usersList.stream().map(users ->
+                UserResponse.builder()
+                    .username(users.getUsername())
+                    .createdTime(users.getCreatedTime())
+                    .build()
+        ).toList();
     }
 
     public UserResponse updatePassword(UserUpdatePasswordRequest request, String token) {
@@ -119,6 +137,9 @@ public class UserService {
             throw new AppException(ErrorCode.TOKEN_INVALID); // nếu token gửi lên sai
         }
 
-        return userMapper.userToUserResponse(users);
+        return UserResponse.builder()
+                .username(users.getUsername())
+                .createdTime(users.getCreatedTime())
+                .build();
     }
 }

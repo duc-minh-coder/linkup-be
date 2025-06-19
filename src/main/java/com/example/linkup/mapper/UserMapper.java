@@ -9,7 +9,7 @@ import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface UserMapper {
-    Users userCreationRequestToUser(UserCreationRequest request);
-
-    UserResponse userToUserResponse(Users users);
+//    Users userCreationRequestToUser(UserCreationRequest request);
+//
+//    UserResponse userToUserResponse(Users users);
 }
