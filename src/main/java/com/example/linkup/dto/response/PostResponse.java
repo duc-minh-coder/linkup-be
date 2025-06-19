@@ -17,6 +17,10 @@ public class PostResponse {
 
     int authorId;
 
+    String authorName;
+
+    String authorAvatarUrl;
+
     String content;
 
     Integer originalPostId;
