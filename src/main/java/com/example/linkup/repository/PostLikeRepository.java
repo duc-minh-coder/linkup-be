@@ -10,4 +10,6 @@ import java.util.List;
 @Repository
 public interface PostLikeRepository extends JpaRepository<PostLikes, KeyPostLikes> {
     List<PostLikes> findAllByPostId(int postId);
+
+    int countByPostId(int postId);
 }

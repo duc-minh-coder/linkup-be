@@ -1,5 +1,6 @@
 package com.example.linkup.service;
 
+import com.example.linkup.dto.response.LikeCountOfPostResponse;
 import com.example.linkup.dto.response.PostLikeResponse;
 import com.example.linkup.dto.response.UserLikeResponse;
 import com.example.linkup.entity.PostLikes;
@@ -16,6 +17,7 @@ import com.example.linkup.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -30,8 +32,9 @@ public class PostLikeService {
     UserRepository userRepository;
     PostRepository postRepository;
     ProfileRepository profileRepository;
+    SimpMessagingTemplate simpMessagingTemplate;
 
-    public PostLikeResponse toggleLike(int postId) {
+    public Boolean toggleLike(int postId) {
         var context = SecurityContextHolder.getContext();
         String username = context.getAuthentication().getName();
 
@@ -43,15 +46,12 @@ public class PostLikeService {
 
         KeyPostLikes key = new KeyPostLikes(user.getId(), post.getId());
         var existing = postLikeRepository.findById(key);
+        boolean isLiked;
 
         if (existing.isPresent()) {
             postLikeRepository.deleteById(key);
 
-            return PostLikeResponse.builder()
-                    .userId(user.getId())
-                    .postId(post.getId())
-                    .createdTime(new Date())
-                    .build();
+            isLiked = false;
         } else {
             PostLikes postLikes = PostLikes.builder()
                     .id(key)
@@ -62,12 +62,15 @@ public class PostLikeService {
 
             postLikeRepository.save(postLikes);
 
-            return PostLikeResponse.builder()
-                    .userId(postLikes.getUser().getId())
-                    .postId(postLikes.getPost().getId())
-                    .createdTime(postLikes.getCreatedTime())
-                    .build();
+            isLiked = true;
         }
+
+        int likesCount = postLikeRepository.countByPostId(postId);
+
+        simpMessagingTemplate.convertAndSend("/topic/post-like/" + postId,
+                new LikeCountOfPostResponse(postId, likesCount));
+
+        return isLiked;
     }
 
     public List<UserLikeResponse> getLikesByPost(int postId) {

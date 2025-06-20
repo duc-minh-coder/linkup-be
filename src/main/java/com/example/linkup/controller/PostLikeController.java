@@ -21,8 +21,8 @@ public class PostLikeController {
     PostLikeService postLikeService;
 
     @PostMapping
-    public ApiResponse<PostLikeResponse> toggleLike(@RequestParam int postId) {
-        return ApiResponse.<PostLikeResponse>builder()
+    public ApiResponse<Boolean> toggleLike(@RequestParam int postId) {
+        return ApiResponse.<Boolean>builder()
                 .result(postLikeService.toggleLike(postId))
                 .build();
     }
