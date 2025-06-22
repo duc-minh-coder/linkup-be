@@ -9,10 +9,12 @@ import com.example.linkup.entity.Friendships;
 import com.example.linkup.entity.PostMedia;
 import com.example.linkup.entity.Posts;
 import com.example.linkup.entity.Users;
+import com.example.linkup.entity.keys.KeyPostLikes;
 import com.example.linkup.enums.MediaType;
 import com.example.linkup.exception.AppException;
 import com.example.linkup.exception.ErrorCode;
 import com.example.linkup.mapper.PostMapper;
+import com.example.linkup.repository.PostLikeRepository;
 import com.example.linkup.repository.PostRepository;
 import com.example.linkup.repository.UserRepository;
 import lombok.AccessLevel;
@@ -38,6 +40,7 @@ public class PostService {
     FriendshipService friendshipService;
     PostLikeService postLikeService;
     CommentService commentService;
+    PostLikeRepository postLikeRepository;
 
     public PostResponse createPost(PostRequest request) {
         var context = SecurityContextHolder.getContext();
@@ -226,6 +229,12 @@ public class PostService {
     }
 
     public List<PostResponse> getPosts() {
+        var context = SecurityContextHolder.getContext();
+        String username = context.getAuthentication().getName();
+
+        Users user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
         List<FriendshipResponse> friendshipResponseList = friendshipService.getFriends();
 
         List<Integer> friendIds = new ArrayList<>();
@@ -241,11 +250,16 @@ public class PostService {
             listFriendPost.addAll(postsList);
         }
 
-        return listFriendPost.stream().map(post -> PostResponse.builder()
+        return listFriendPost.stream().map(post -> {
+            KeyPostLikes key = new KeyPostLikes(user.getId(), post.getId());
+            var isLike = postLikeRepository.findById(key);
+
+            return PostResponse.builder()
                 .id(post.getId())
                 .authorId(post.getAuthor().getId())
                 .authorName(post.getAuthor().getProfile().getFullName())
                 .authorAvatarUrl(post.getAuthor().getProfile().getAvatarUrl())
+                .isLiked(isLike.isPresent())
                 .content(post.getContent())
                 .createdTime(post.getCreatedTime())
                 .updatedTime(post.getUpdatedTime())
@@ -253,7 +267,8 @@ public class PostService {
                         .map(postMapper::postMediaToPostMediaResponse).toList())
                 .userLikes(postLikeService.getLikesByPost(post.getId()))
                 .comments(commentService.getCommentsOfPost(post.getId()))
-                .build()).toList();
+                .build();
+        }).toList();
     }
 
     public PostResponse sharePost(int postId) {

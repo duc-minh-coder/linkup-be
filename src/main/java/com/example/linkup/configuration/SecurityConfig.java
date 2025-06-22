@@ -44,7 +44,6 @@ public class SecurityConfig {
                 request
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINT).permitAll()
-                        .requestMatchers("/ws/**").permitAll()
                         .anyRequest().authenticated()
                 );
 

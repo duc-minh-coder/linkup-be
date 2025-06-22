@@ -67,6 +67,7 @@ public class PostLikeService {
 
         int likesCount = postLikeRepository.countByPostId(postId);
 
+        // Gửi message về cho client đang subscribe
         simpMessagingTemplate.convertAndSend("/topic/post-like/" + postId,
                 new LikeCountOfPostResponse(postId, likesCount));
 

@@ -28,7 +28,7 @@ public class PostController {
                 .build();
     }
 
-    @GetMapping()
+    @GetMapping("/user")
     public ApiResponse<List<PostResponse>> getAllUrPost() {
         return ApiResponse.<List<PostResponse>>builder()
                 .result(postService.getAllUrPost())

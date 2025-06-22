@@ -23,6 +23,8 @@ public class PostResponse {
 
     String content;
 
+    boolean isLiked;
+
     Integer originalPostId;
 
     List<PostMediaResponse> postMedia;
