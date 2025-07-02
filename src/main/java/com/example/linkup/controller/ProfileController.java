@@ -29,6 +29,15 @@ public class ProfileController {
                 .build();
     }
 
+    @GetMapping("/user/{userId}")
+    ApiResponse<ProfileResponse> getProfileWithId(@PathVariable int userId) {
+        ProfileResponse profileResponse = profileService.getProfileWithId(userId);
+
+        return ApiResponse.<ProfileResponse>builder()
+                .result(profileResponse)
+                .build();
+    }
+
     @GetMapping("")
     ApiResponse<List<ProfileResponse>> getAllProfile() {
         List<ProfileResponse> profilesList = profileService.getAllProfile();

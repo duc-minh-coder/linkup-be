@@ -1,7 +1,10 @@
 package com.example.linkup.service;
 
 import com.example.linkup.dto.request.ProfileRequest;
+import com.example.linkup.dto.response.FriendshipResponse;
+import com.example.linkup.dto.response.PostResponse;
 import com.example.linkup.dto.response.ProfileResponse;
+import com.example.linkup.entity.Friendships;
 import com.example.linkup.entity.Profiles;
 import com.example.linkup.entity.Users;
 import com.example.linkup.exception.AppException;
@@ -32,6 +35,8 @@ public class ProfileService {
     UserRepository userRepository;
     ProfileMapper profileMapper;
     CloudinaryService cloudinaryService;
+    FriendshipService friendshipService;
+    PostService postService;
 
     public ProfileResponse getProfile() {
         var context = SecurityContextHolder.getContext();
@@ -40,9 +45,39 @@ public class ProfileService {
         Users users = userRepository.findByUsername(username)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
+        List<FriendshipResponse> friendshipResponseList = friendshipService.getFriends();
+
+        List<PostResponse> postResponseList = postService.getAllUrPost();
+
         return ProfileResponse.builder()
+                .id(users.getProfile().getUserId())
                 .fullName(users.getProfile().getFullName())
                 .avatarUrl(users.getProfile().getAvatarUrl())
+                .location(users.getProfile().getLocation())
+                .bio(users.getProfile().getBio())
+                .birthday(users.getProfile().getBirthday())
+                .countFriend(friendshipResponseList.size())
+                .countPost(postResponseList.size())
+                .build();
+    }
+
+    public ProfileResponse getProfileWithId(int userId) {
+        Profiles userProfile = profileRepository.findById(userId)
+                .orElseThrow(() -> new AppException(ErrorCode.PROFILE_NOT_EXISTED));
+
+        List<FriendshipResponse> friendshipResponseList = friendshipService.getFriends();
+
+        List<PostResponse> postResponseList = postService.getAllUrPost();
+
+        return ProfileResponse.builder()
+                .id(userProfile.getUserId())
+                .fullName(userProfile.getFullName())
+                .avatarUrl(userProfile.getAvatarUrl())
+                .location(userProfile.getLocation())
+                .bio(userProfile.getBio())
+                .birthday(userProfile.getBirthday())
+                .countFriend(friendshipResponseList.size())
+                .countPost(postResponseList.size())
                 .build();
     }
 
