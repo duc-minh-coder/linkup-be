@@ -16,6 +16,7 @@ spring:
       max-request-size: 20MB
 server:
   post: 8080
+  address: 0.0.0.0
   servlet:
     context-path: /api
 jwt:
