@@ -13,6 +13,7 @@ import java.util.Date;
 public class ConversationResponse {
     int userId;
     String username;
+    String userAvatarUrl;
     String lastMessage;
     Date lastMessageTime;
     boolean isOnline;

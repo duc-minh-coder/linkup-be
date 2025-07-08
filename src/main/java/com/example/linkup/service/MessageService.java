@@ -85,6 +85,7 @@ public class MessageService {
             return ConversationResponse.builder()
                     .userId(otherUser.getId())
                     .username(otherUser.getProfile().getFullName())
+                    .userAvatarUrl(otherUser.getProfile().getAvatarUrl())
                     .lastMessage(message.getContent())
                     .lastMessageTime(message.getCreatedTime())
                     .isOnline(false)
