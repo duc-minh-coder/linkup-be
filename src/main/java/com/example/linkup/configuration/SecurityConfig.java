@@ -82,7 +82,7 @@ public class SecurityConfig {
 
         corsConfiguration.addAllowedOrigin("http://localhost:3000");
         corsConfiguration.addAllowedOrigin("http://127.0.0.1:5500");
-        corsConfiguration.addAllowedOrigin("http://192.168.1.5:3000");
+//        corsConfiguration.addAllowedOrigin("http://192.168.1.14:3000");
         corsConfiguration.setAllowCredentials(true);
         corsConfiguration.addAllowedHeader("*");
         corsConfiguration.addAllowedMethod("*");

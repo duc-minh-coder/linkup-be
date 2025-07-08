@@ -116,7 +116,7 @@ public class PostService {
 
         int authorId = user.getId();
 
-        List<Posts> postList = postRepository.findAllByAuthorId(authorId);
+        List<Posts> postList = postRepository.getAllByAuthorId(authorId);
 
         return postList.stream()
                 .map(post -> PostResponse.builder()
@@ -245,10 +245,13 @@ public class PostService {
         List<Posts> listFriendPost = new ArrayList<>();
 
         for (int friendId : friendIds) {
-            List<Posts> postsList = postRepository.findAllByAuthorId(friendId);
+            List<Posts> postsList = postRepository.getAllByAuthorId(friendId);
 
             listFriendPost.addAll(postsList);
         }
+
+        listFriendPost.sort((a, b) ->
+                b.getCreatedTime().compareTo(a.getCreatedTime()));
 
         return listFriendPost.stream().map(post -> {
             KeyPostLikes key = new KeyPostLikes(user.getId(), post.getId());
