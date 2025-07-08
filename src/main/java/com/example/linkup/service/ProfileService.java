@@ -45,7 +45,7 @@ public class ProfileService {
         Users users = userRepository.findByUsername(username)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
-        List<FriendshipResponse> friendshipResponseList = friendshipService.getFriends();
+        List<FriendshipResponse> friendshipResponseList = friendshipService.getFriends(users.getId());
 
         List<PostResponse> postResponseList = postService.getAllUrPost();
 
@@ -65,9 +65,9 @@ public class ProfileService {
         Profiles userProfile = profileRepository.findById(userId)
                 .orElseThrow(() -> new AppException(ErrorCode.PROFILE_NOT_EXISTED));
 
-        List<FriendshipResponse> friendshipResponseList = friendshipService.getFriends();
+        List<FriendshipResponse> friendshipResponseList = friendshipService.getFriends(userProfile.getUserId());
 
-        List<PostResponse> postResponseList = postService.getAllUrPost();
+        List<PostResponse> postResponseList = postService.getPostsByUserId(userProfile.getUserId());
 
         return ProfileResponse.builder()
                 .id(userProfile.getUserId())

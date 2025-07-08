@@ -146,18 +146,12 @@ public class FriendshipService {
         return "đã xoá bạn bè";
     }
 
-    public List<FriendshipResponse> getFriends() {
-        var context = SecurityContextHolder.getContext();
-        String username = context.getAuthentication().getName();
-
-        Users user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
-
+    public List<FriendshipResponse> getFriends(int userId) {
         List<Friendships> sentFriendshipList =
-                friendshipRepository.findByIdUserIdAndStatus(user.getId(), FriendshipStatus.ACCEPTED);
+                friendshipRepository.findByIdUserIdAndStatus(userId, FriendshipStatus.ACCEPTED);
 
         List<Friendships> receiverFriendshipList =
-                friendshipRepository.findByIdFriendIdAndStatus(user.getId(), FriendshipStatus.ACCEPTED);
+                friendshipRepository.findByIdFriendIdAndStatus(userId, FriendshipStatus.ACCEPTED);
 
         List<Users> friends = new ArrayList<>();
 

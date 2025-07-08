@@ -142,4 +142,14 @@ public class UserService {
                 .createdTime(users.getCreatedTime())
                 .build();
     }
+
+    public Boolean checkOwner(int idToCheck) {
+        var context = SecurityContextHolder.getContext();
+        String username = context.getAuthentication().getName();
+
+        Users user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        return user.getId() == idToCheck;
+    }
 }

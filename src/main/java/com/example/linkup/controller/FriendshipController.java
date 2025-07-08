@@ -46,10 +46,10 @@ public class FriendshipController {
                 .build();
     }
 
-    @GetMapping
-    public ApiResponse<List<FriendshipResponse>> getFriends() {
+    @GetMapping("/user/{userId}")
+    public ApiResponse<List<FriendshipResponse>> getFriends(@PathVariable int userId) {
         return ApiResponse.<List<FriendshipResponse>>builder()
-                .result(friendshipService.getFriends())
+                .result(friendshipService.getFriends(userId))
                 .build();
     }
 }

@@ -63,4 +63,11 @@ public class UserController {
                 .result(userService.updatePassword(request, token))
                 .build();
     }
+
+    @GetMapping("/check-owner/{idToCheck}")
+    ApiResponse<Boolean> checkOwner(@PathVariable int idToCheck) {
+        return ApiResponse.<Boolean>builder()
+                .result(userService.checkOwner(idToCheck))
+                .build();
+    }
 }

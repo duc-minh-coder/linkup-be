@@ -35,6 +35,13 @@ public class PostController {
                 .build();
     }
 
+    @GetMapping("/user/{userId}")
+    public ApiResponse<List<PostResponse>> getPostsByUserId(@PathVariable int userId) {
+        return ApiResponse.<List<PostResponse>>builder()
+                .result(postService.getPostsByUserId(userId))
+                .build();
+    }
+
     @PatchMapping(value = "/{postId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<PostResponse> updatePost(@PathVariable int postId, @ModelAttribute UpdatePostRequest request) {
         return ApiResponse.<PostResponse>builder()

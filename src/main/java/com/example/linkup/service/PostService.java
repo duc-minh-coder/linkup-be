@@ -134,6 +134,28 @@ public class PostService {
                     .build()).toList();
     }
 
+    public List<PostResponse> getPostsByUserId(int userId) {
+        Users user = userRepository.findById(userId)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        List<Posts> postList = postRepository.getAllByAuthorId(userId);
+
+        return postList.stream()
+                .map(post -> PostResponse.builder()
+                        .id(post.getId())
+                        .authorId(userId)
+                        .authorName(user.getProfile().getFullName())
+                        .authorAvatarUrl(user.getProfile().getAvatarUrl())
+                        .content(post.getContent())
+                        .createdTime(post.getCreatedTime())
+                        .updatedTime(post.getUpdatedTime())
+                        .postMedia(post.getPostMedia().stream()
+                                .map(postMapper::postMediaToPostMediaResponse).toList())
+                        .userLikes(postLikeService.getLikesByPost(post.getId()))
+                        .comments(commentService.getCommentsOfPost(post.getId()))
+                        .build()).toList();
+    }
+
     public PostResponse updatePost(int postId, UpdatePostRequest request) {
         var context = SecurityContextHolder.getContext();
         String username = context.getAuthentication().getName();
@@ -235,7 +257,7 @@ public class PostService {
         Users user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
-        List<FriendshipResponse> friendshipResponseList = friendshipService.getFriends();
+        List<FriendshipResponse> friendshipResponseList = friendshipService.getFriends(user.getId());
 
         List<Integer> friendIds = new ArrayList<>();
 
