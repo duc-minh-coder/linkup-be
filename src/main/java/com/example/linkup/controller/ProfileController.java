@@ -2,7 +2,9 @@ package com.example.linkup.controller;
 
 import com.example.linkup.dto.request.ApiResponse;
 import com.example.linkup.dto.request.ProfileRequest;
+import com.example.linkup.dto.request.SearchProfileRequest;
 import com.example.linkup.dto.response.ProfileResponse;
+import com.example.linkup.dto.response.SearchProfileResponse;
 import com.example.linkup.service.ProfileService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +37,13 @@ public class ProfileController {
 
         return ApiResponse.<ProfileResponse>builder()
                 .result(profileResponse)
+                .build();
+    }
+
+    @PostMapping("/search")
+    ApiResponse<List<SearchProfileResponse>> searchUser(@RequestBody SearchProfileRequest request) {
+        return ApiResponse.<List<SearchProfileResponse>>builder()
+                .result(profileService.searchUser(request))
                 .build();
     }
 

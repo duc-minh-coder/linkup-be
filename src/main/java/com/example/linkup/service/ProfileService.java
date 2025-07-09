@@ -1,9 +1,11 @@
 package com.example.linkup.service;
 
 import com.example.linkup.dto.request.ProfileRequest;
+import com.example.linkup.dto.request.SearchProfileRequest;
 import com.example.linkup.dto.response.FriendshipResponse;
 import com.example.linkup.dto.response.PostResponse;
 import com.example.linkup.dto.response.ProfileResponse;
+import com.example.linkup.dto.response.SearchProfileResponse;
 import com.example.linkup.entity.Friendships;
 import com.example.linkup.entity.Profiles;
 import com.example.linkup.entity.Users;
@@ -25,6 +27,8 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+
+import static java.util.stream.Collectors.toList;
 
 @Slf4j
 @Service
@@ -79,6 +83,18 @@ public class ProfileService {
                 .countFriend(friendshipResponseList.size())
                 .countPost(postResponseList.size())
                 .build();
+    }
+
+    public List<SearchProfileResponse> searchUser(SearchProfileRequest request) {
+        List<Profiles> profilesList = profileRepository.searchUserProfileByName(request.getText());
+
+        return profilesList.stream().map(profile ->
+                SearchProfileResponse.builder()
+                        .id(profile.getUserId())
+                        .fullName(profile.getFullName())
+                        .avatarUrl(profile.getAvatarUrl())
+                        .build()
+        ).toList();
     }
 
     public List<ProfileResponse> getAllProfile() {
