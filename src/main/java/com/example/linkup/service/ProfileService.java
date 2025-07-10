@@ -121,12 +121,6 @@ public class ProfileService {
         if (request.getBio() != null)
             profiles.setBio(request.getBio());
 
-        if (request.getLocation() != null)
-            profiles.setLocation(request.getLocation());
-
-        if (request.getBirthday() != null)
-            profiles.setBirthday(request.getBirthday());
-
         profiles.setUpdatedTime(new Date());
 
         profileRepository.save(profiles);

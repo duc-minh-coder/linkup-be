@@ -56,7 +56,7 @@ public class ProfileController {
                 .build();
     }
 
-    @PatchMapping("/update-profile")
+    @PostMapping("/update-profile")
     ApiResponse<ProfileResponse> updateProfile(@RequestBody ProfileRequest request) {
         return ApiResponse.<ProfileResponse>builder()
                 .result(profileService.updateProfile(request))

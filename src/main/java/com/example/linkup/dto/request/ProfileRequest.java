@@ -18,8 +18,8 @@ public class ProfileRequest {
 
     String bio;
 
-    String location;
-
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    Date birthday;
+//    String location;
+//
+//    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+//    Date birthday;
 }
