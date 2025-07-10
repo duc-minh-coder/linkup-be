@@ -22,6 +22,5 @@ public class CommentResponse {
     String avatarUrl;
     String fullName;
     String content;
-    Integer parentCommentId;
     Date updatedTime;
 }

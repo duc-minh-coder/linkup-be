@@ -45,28 +45,18 @@ public class CommentService {
 
         Comments parentComment = null;
 
-        if (request.getParentCommentId() != null) {
-            parentComment = commentRepository.findById(request.getParentCommentId())
-                    .orElseThrow(() -> new AppException(ErrorCode.COMMENT_NOT_EXISTED));
-        }
-
         Comments comments = Comments.builder()
                 .author(user)
                 .post(post)
                 .content(request.getContent())
                 .createdTime(new Date())
                 .updatedTime(new Date())
-                .parentComment(parentComment)
                 .build();
 
         Comments commentsSaved = commentRepository.save(comments);
 
         return CommentResponse.builder()
                 .id(commentsSaved.getId())
-                .parentCommentId(commentsSaved.getParentComment() != null
-                        ? commentsSaved.getParentComment().getId()
-                        : null
-                )
                 .fullName(profile.getFullName())
                 .avatarUrl(profile.getAvatarUrl())
                 .authorId(commentsSaved.getAuthor().getId())
@@ -84,10 +74,6 @@ public class CommentService {
 
              return CommentResponse.builder()
                      .id(comment.getId())
-                     .parentCommentId(comment.getParentComment() != null
-                             ? comment.getParentComment().getId()
-                             : null
-                     )
                      .authorId(comment.getAuthor().getId())
                      .avatarUrl(profile.getAvatarUrl())
                      .fullName(profile.getFullName())

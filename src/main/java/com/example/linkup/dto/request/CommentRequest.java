@@ -16,5 +16,4 @@ import java.util.Date;
 public class CommentRequest {
     int postId;
     String content;
-    Integer parentCommentId;
 }
