@@ -28,6 +28,13 @@ public interface MessageRepository extends JpaRepository<Messages, Integer> {
             "ORDER BY m.createdTime ASC")
     List<Messages> findConversationBetweenUsers(int userId, int otherUserId);
 
+    @Query("SELECT m FROM Messages m WHERE m.id = ( " +
+            "SELECT MAX(m2.id) FROM Messages m2 WHERE " +
+            "((m.sender.id = :userId AND m.receiver.id = :otherUserId) OR " +
+            "(m.sender.id = :otherUserId AND m.receiver.id = :userId)) " +
+            ")")
+    Messages findLastMessageBetweenUsers(int userId, int otherUserId);
+
     @Modifying
     @Transactional
     @Query("DELETE FROM Messages m WHERE " +

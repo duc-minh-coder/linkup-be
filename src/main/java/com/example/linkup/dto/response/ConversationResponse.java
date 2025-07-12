@@ -16,5 +16,6 @@ public class ConversationResponse {
     String userAvatarUrl;
     String lastMessage;
     Date lastMessageTime;
+    boolean userSentLast;
     boolean isOnline;
 }

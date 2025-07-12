@@ -1,10 +1,13 @@
 package com.example.linkup.service;
 
+import com.example.linkup.dto.request.MessageGetListConversationWithFriendsRequest;
 import com.example.linkup.dto.request.MessageRequest;
 import com.example.linkup.dto.response.ConversationResponse;
+import com.example.linkup.dto.response.FriendshipResponse;
 import com.example.linkup.dto.response.MessageResponse;
 import com.example.linkup.entity.Messages;
 import com.example.linkup.entity.Users;
+import com.example.linkup.entity.keys.KeyFriendships;
 import com.example.linkup.enums.MessageType;
 import com.example.linkup.exception.AppException;
 import com.example.linkup.exception.ErrorCode;
@@ -22,6 +25,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -32,6 +36,7 @@ import java.util.List;
 public class MessageService {
     MessageRepository messageRepository;
     UserRepository userRepository;
+    FriendshipService friendshipService;
 
     public MessageResponse sendMessage(MessageRequest request) {
         var content = SecurityContextHolder.getContext();
@@ -93,6 +98,45 @@ public class MessageService {
         }).toList();
     }
 
+    public List<ConversationResponse> getListConversationWithFriends() {
+        var context = SecurityContextHolder.getContext();
+        String username = context.getAuthentication().getName();
+
+        Users user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        List<FriendshipResponse> friends = friendshipService.getFriends(user.getId());
+
+        List<ConversationResponse> listConversation = new ArrayList<>();
+
+        for (FriendshipResponse friend : friends) {
+            Messages message = messageRepository.findLastMessageBetweenUsers(user.getId(), friend.getId());
+
+            boolean userSentLast = false;
+            String lastMessage = null;
+            Date lastMessageTime = null;
+
+            if (message != null) {
+                userSentLast = message.getSender().getId() == user.getId();
+                lastMessage = message.getContent();
+                lastMessageTime = message.getCreatedTime();
+            }
+
+            ConversationResponse conversationResponse = ConversationResponse.builder()
+                    .userId(friend.getId())
+                    .username(friend.getFullName())
+                    .userAvatarUrl(friend.getAvatarUrl())
+                    .lastMessage(lastMessage)
+                    .lastMessageTime(lastMessageTime)
+                    .userSentLast(userSentLast)
+                    .build();
+
+            listConversation.add(conversationResponse);
+        }
+
+        return listConversation;
+    }
+
     public List<MessageResponse> getConversation(int otherUserId) {
         var context = SecurityContextHolder.getContext();
         String username = context.getAuthentication().getName();
@@ -117,7 +161,7 @@ public class MessageService {
                         .type(MessageType.CHAT)
                         .createdTime(message.getCreatedTime())
                         .isRead(message.isRead())
-                    .build()
+                        .build()
                 ).toList();
     }
 

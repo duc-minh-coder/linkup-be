@@ -1,6 +1,7 @@
 package com.example.linkup.controller;
 
 import com.example.linkup.dto.request.ApiResponse;
+import com.example.linkup.dto.request.MessageGetListConversationWithFriendsRequest;
 import com.example.linkup.dto.request.MessageRequest;
 import com.example.linkup.dto.response.ConversationResponse;
 import com.example.linkup.dto.response.MessageResponse;
@@ -44,6 +45,13 @@ public class MessageController {
     public ApiResponse<List<ConversationResponse>> getListConversation() {
         return ApiResponse.<List<ConversationResponse>>builder()
                 .result(messageService.getListConversation())
+                .build();
+    }
+
+    @GetMapping("/conversation")
+    ApiResponse<List<ConversationResponse>> getListConversationWithFriends() {
+        return ApiResponse.<List<ConversationResponse>>builder()
+                .result(messageService.getListConversationWithFriends())
                 .build();
     }
 
