@@ -1,5 +1,6 @@
 package com.example.linkup.dto.response;
 
+import com.example.linkup.enums.RoleType;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -18,6 +19,7 @@ public class ProfileResponse {
     private String bio;
     private String location;
     private Date birthday;
+    private RoleType role;
     private int countPost;
     private int countFriend;
 }

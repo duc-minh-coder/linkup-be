@@ -173,4 +173,25 @@ public class FriendshipService {
                     .build();
         }).toList();
     }
+
+    public boolean isFriend(int friendId) {
+        var context = SecurityContextHolder.getContext();
+        String username = context.getAuthentication().getName();
+
+        Users user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        boolean isFriend = false;
+
+        KeyFriendships key1 = new KeyFriendships(user.getId(), friendId);
+        KeyFriendships key2 = new KeyFriendships(friendId, user.getId());
+
+        var friendship1 = friendshipRepository.findById(key1);
+        var friendship2 = friendshipRepository.findById(key2);
+
+        if (friendship1.isPresent() || friendship2.isPresent())
+            isFriend = true;
+
+        return isFriend;
+    }
 }

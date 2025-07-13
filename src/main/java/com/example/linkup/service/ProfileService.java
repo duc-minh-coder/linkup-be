@@ -9,6 +9,7 @@ import com.example.linkup.dto.response.SearchProfileResponse;
 import com.example.linkup.entity.Friendships;
 import com.example.linkup.entity.Profiles;
 import com.example.linkup.entity.Users;
+import com.example.linkup.enums.RoleType;
 import com.example.linkup.exception.AppException;
 import com.example.linkup.exception.ErrorCode;
 import com.example.linkup.mapper.ProfileMapper;
@@ -66,6 +67,12 @@ public class ProfileService {
     }
 
     public ProfileResponse getProfileWithId(int userId) {
+        var context = SecurityContextHolder.getContext();
+        String username = context.getAuthentication().getName();
+
+        Users user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
         Profiles userProfile = profileRepository.findById(userId)
                 .orElseThrow(() -> new AppException(ErrorCode.PROFILE_NOT_EXISTED));
 
@@ -80,6 +87,12 @@ public class ProfileService {
                 .location(userProfile.getLocation())
                 .bio(userProfile.getBio())
                 .birthday(userProfile.getBirthday())
+                .role(user.getId() == userProfile.getUserId()
+                        ? RoleType.OWNER
+                        : friendshipService.isFriend(userProfile.getUserId())
+                            ? RoleType.FRIEND
+                            : RoleType.NOT_FRIEND
+                )
                 .countFriend(friendshipResponseList.size())
                 .countPost(postResponseList.size())
                 .build();
