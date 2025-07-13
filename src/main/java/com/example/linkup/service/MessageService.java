@@ -121,18 +121,23 @@ public class MessageService {
                 lastMessage = message.getContent();
                 lastMessageTime = message.getCreatedTime();
             }
+                ConversationResponse conversationResponse = ConversationResponse.builder()
+                        .userId(friend.getId())
+                        .username(friend.getFullName())
+                        .userAvatarUrl(friend.getAvatarUrl())
+                        .lastMessage(lastMessage)
+                        .lastMessageTime(lastMessageTime)
+                        .userSentLast(userSentLast)
+                        .build();
 
-            ConversationResponse conversationResponse = ConversationResponse.builder()
-                    .userId(friend.getId())
-                    .username(friend.getFullName())
-                    .userAvatarUrl(friend.getAvatarUrl())
-                    .lastMessage(lastMessage)
-                    .lastMessageTime(lastMessageTime)
-                    .userSentLast(userSentLast)
-                    .build();
-
-            listConversation.add(conversationResponse);
+                listConversation.add(conversationResponse);
         }
+
+        listConversation.sort((a, b) -> {
+            if (a.getLastMessageTime() == null) return 1;
+            if (b.getLastMessageTime() == null) return -1;
+            return b.getLastMessageTime().compareTo(a.getLastMessageTime());
+        });
 
         return listConversation;
     }

@@ -30,9 +30,9 @@ public interface MessageRepository extends JpaRepository<Messages, Integer> {
 
     @Query("SELECT m FROM Messages m WHERE m.id = ( " +
             "SELECT MAX(m2.id) FROM Messages m2 WHERE " +
-            "((m.sender.id = :userId AND m.receiver.id = :otherUserId) OR " +
-            "(m.sender.id = :otherUserId AND m.receiver.id = :userId)) " +
-            ")")
+            "((m2.sender.id = :userId AND m2.receiver.id = :otherUserId) OR " +
+            "(m2.sender.id = :otherUserId AND m2.receiver.id = :userId))" +
+            ") ")
     Messages findLastMessageBetweenUsers(int userId, int otherUserId);
 
     @Modifying
