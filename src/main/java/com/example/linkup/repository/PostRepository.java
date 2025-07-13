@@ -1,6 +1,8 @@
 package com.example.linkup.repository;
 
 import com.example.linkup.entity.Posts;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -16,4 +18,9 @@ public interface PostRepository extends JpaRepository<Posts, Integer> {
             "WHERE p.author.id = :authorId " +
             "ORDER BY p.createdTime DESC")
     List<Posts> getAllByAuthorId(@Param("authorId") Integer authorId);
+
+    @Query("SELECT p FROM Posts p WHERE " +
+            "p.author.id IN :friendIds " +
+            "ORDER BY p.createdTime DESC")
+    Page<Posts> findPostByFriendIds(List<Integer> friendIds, Pageable pageable);
 }

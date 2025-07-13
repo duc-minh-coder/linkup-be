@@ -20,6 +20,9 @@ import com.example.linkup.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -293,6 +296,45 @@ public class PostService {
                 .userLikes(postLikeService.getLikesByPost(post.getId()))
                 .comments(commentService.getCommentsOfPost(post.getId()))
                 .build();
+        }).toList();
+    }
+
+    public List<PostResponse> getPostOfFriends(int page, int size) {
+        var context = SecurityContextHolder.getContext();
+        String username = context.getAuthentication().getName();
+
+        Users user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        List<FriendshipResponse> friendList = friendshipService.getFriends(user.getId());
+
+        List<Integer> friendIds = new ArrayList<>();
+
+        for (FriendshipResponse friend : friendList)
+            friendIds.add(friend.getId());
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<Posts> postsPage = postRepository.findPostByFriendIds(friendIds, pageable);
+
+        return postsPage.map(post -> {
+            KeyPostLikes key = new KeyPostLikes(user.getId(), post.getId());
+            var isLike = postLikeRepository.findById(key);
+
+            return PostResponse.builder()
+                    .id(post.getId())
+                    .authorId(post.getAuthor().getId())
+                    .authorName(post.getAuthor().getProfile().getFullName())
+                    .authorAvatarUrl(post.getAuthor().getProfile().getAvatarUrl())
+                    .content(post.getContent())
+                    .postMedia(post.getPostMedia().stream()
+                            .map(postMapper::postMediaToPostMediaResponse).toList())
+                    .createdTime(post.getCreatedTime())
+                    .updatedTime(post.getUpdatedTime())
+                    .userLikes(postLikeService.getLikesByPost(post.getId()))
+                    .comments(commentService.getCommentsOfPost(post.getId()))
+                    .isLiked(isLike.isPresent())
+                    .build();
         }).toList();
     }
 

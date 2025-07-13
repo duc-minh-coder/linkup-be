@@ -42,6 +42,16 @@ public class PostController {
                 .build();
     }
 
+    @GetMapping("/all-post")
+    public ApiResponse<List<PostResponse>> getAllPostOfFriends(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        return ApiResponse.<List<PostResponse>>builder()
+                .result(postService.getPostOfFriends(page, size))
+                .build();
+    }
+
     @PatchMapping(value = "/{postId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<PostResponse> updatePost(@PathVariable int postId, @ModelAttribute UpdatePostRequest request) {
         return ApiResponse.<PostResponse>builder()
