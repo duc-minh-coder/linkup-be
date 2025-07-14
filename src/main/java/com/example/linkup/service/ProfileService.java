@@ -78,7 +78,7 @@ public class ProfileService {
 
         List<FriendshipResponse> friendshipResponseList = friendshipService.getFriends(userProfile.getUserId());
 
-        List<PostResponse> postResponseList = postService.getPostsByUserId(userProfile.getUserId());
+        List<PostResponse> postResponseList = postService.getAllPostByUserId(userProfile.getUserId());
 
         return ProfileResponse.builder()
                 .id(userProfile.getUserId())

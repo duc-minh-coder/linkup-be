@@ -36,9 +36,13 @@ public class PostController {
     }
 
     @GetMapping("/user/{userId}")
-    public ApiResponse<List<PostResponse>> getPostsByUserId(@PathVariable int userId) {
+    public ApiResponse<List<PostResponse>> getPostsByUserId(
+            @PathVariable int userId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
         return ApiResponse.<List<PostResponse>>builder()
-                .result(postService.getPostsByUserId(userId))
+                .result(postService.getPostsByUserId(userId, page, size))
                 .build();
     }
 

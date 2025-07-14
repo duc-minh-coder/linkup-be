@@ -137,7 +137,39 @@ public class PostService {
                     .build()).toList();
     }
 
-    public List<PostResponse> getPostsByUserId(int userId) {
+    public List<PostResponse> getPostsByUserId(int userId, int page, int size) {
+        Users user = userRepository.findById(userId)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        List<Integer> userIds = new ArrayList<>();
+        userIds.add(user.getId());
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<Posts> postsPage = postRepository.findPostByUserIds(userIds, pageable);
+
+        return postsPage.map(post -> {
+            KeyPostLikes key = new KeyPostLikes(user.getId(), post.getId());
+            var isLike = postLikeRepository.findById(key);
+
+            return PostResponse.builder()
+                    .id(post.getId())
+                    .authorId(post.getAuthor().getId())
+                    .authorName(post.getAuthor().getProfile().getFullName())
+                    .authorAvatarUrl(post.getAuthor().getProfile().getAvatarUrl())
+                    .content(post.getContent())
+                    .postMedia(post.getPostMedia().stream()
+                            .map(postMapper::postMediaToPostMediaResponse).toList())
+                    .createdTime(post.getCreatedTime())
+                    .updatedTime(post.getUpdatedTime())
+                    .userLikes(postLikeService.getLikesByPost(post.getId()))
+                    .comments(commentService.getCommentsOfPost(post.getId()))
+                    .isLiked(isLike.isPresent())
+                    .build();
+        }).toList();
+    }
+
+    public List<PostResponse> getAllPostByUserId(int userId) {
         Users user = userRepository.findById(userId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
@@ -308,14 +340,14 @@ public class PostService {
 
         List<FriendshipResponse> friendList = friendshipService.getFriends(user.getId());
 
-        List<Integer> friendIds = new ArrayList<>();
+        List<Integer> userIds = new ArrayList<>();
 
         for (FriendshipResponse friend : friendList)
-            friendIds.add(friend.getId());
+            userIds.add(friend.getId());
 
         Pageable pageable = PageRequest.of(page, size);
 
-        Page<Posts> postsPage = postRepository.findPostByFriendIds(friendIds, pageable);
+        Page<Posts> postsPage = postRepository.findPostByUserIds(userIds, pageable);
 
         return postsPage.map(post -> {
             KeyPostLikes key = new KeyPostLikes(user.getId(), post.getId());
