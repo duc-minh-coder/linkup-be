@@ -23,4 +23,9 @@ public interface PostRepository extends JpaRepository<Posts, Integer> {
             "p.author.id IN :userIds " +
             "ORDER BY p.createdTime DESC")
     Page<Posts> findPostByUserIds(List<Integer> userIds, Pageable pageable);
+
+    @Query("SELECT p FROM Posts p WHERE " +
+            "p.author.id = :userIds " +
+            "ORDER BY p.createdTime DESC")
+    Page<Posts> findPostByUserId(Integer userIds, Pageable pageable);
 }

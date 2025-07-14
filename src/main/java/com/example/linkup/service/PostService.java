@@ -141,12 +141,9 @@ public class PostService {
         Users user = userRepository.findById(userId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
-        List<Integer> userIds = new ArrayList<>();
-        userIds.add(user.getId());
-
         Pageable pageable = PageRequest.of(page, size);
 
-        Page<Posts> postsPage = postRepository.findPostByUserIds(userIds, pageable);
+        Page<Posts> postsPage = postRepository.findPostByUserId(user.getId(), pageable);
 
         return postsPage.map(post -> {
             KeyPostLikes key = new KeyPostLikes(user.getId(), post.getId());
