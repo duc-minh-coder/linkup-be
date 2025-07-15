@@ -19,6 +19,9 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -92,8 +95,11 @@ public class ProfileService {
                 .build();
     }
 
-    public List<SearchProfileResponse> searchUser(SearchProfileRequest request) {
-        List<Profiles> profilesList = profileRepository.searchUserProfileByName(request.getText());
+    public List<SearchProfileResponse> searchUser(SearchProfileRequest request, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<Profiles> profilesList =
+                profileRepository.searchUserProfileByNameWithPage(request.getText(), pageable);
 
         return profilesList.stream().map(profile ->
                 SearchProfileResponse.builder()

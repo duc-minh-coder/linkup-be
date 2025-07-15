@@ -41,9 +41,13 @@ public class ProfileController {
     }
 
     @PostMapping("/search")
-    ApiResponse<List<SearchProfileResponse>> searchUser(@RequestBody SearchProfileRequest request) {
+    ApiResponse<List<SearchProfileResponse>> searchUser(
+            @RequestBody SearchProfileRequest request,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
         return ApiResponse.<List<SearchProfileResponse>>builder()
-                .result(profileService.searchUser(request))
+                .result(profileService.searchUser(request, page, size))
                 .build();
     }
 
