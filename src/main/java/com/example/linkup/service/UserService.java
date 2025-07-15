@@ -152,4 +152,16 @@ public class UserService {
 
         return user.getId() == idToCheck;
     }
+
+    public String deleteAccount() {
+        var context = SecurityContextHolder.getContext();
+        String username = context.getAuthentication().getName();
+
+        Users user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        userRepository.deleteById(user.getId());
+
+        return "đã xoá account";
+    }
 }

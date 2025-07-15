@@ -70,4 +70,11 @@ public class UserController {
                 .result(userService.checkOwner(idToCheck))
                 .build();
     }
+
+    @DeleteMapping("/delete")
+    ApiResponse<String> deleteAccount() {
+        return ApiResponse.<String>builder()
+                .result(userService.deleteAccount())
+                .build();
+    }
 }
