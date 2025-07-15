@@ -12,5 +12,5 @@ import java.util.List;
 public interface FriendshipRepository extends JpaRepository<Friendships, KeyFriendships> {
     List<Friendships> findByIdUserIdAndStatus(int userId, FriendshipStatus status);
 
-    List<Friendships> findByIdFriendIdAndStatus(int friendId, FriendshipStatus status);
+//    List<Friendships> findByIdFriendIdAndStatus(int friendId, FriendshipStatus status);
 }

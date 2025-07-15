@@ -49,4 +49,11 @@ public class FriendshipController {
                 .result(friendshipService.getFriends(userId))
                 .build();
     }
+
+    @GetMapping("/request")
+    public ApiResponse<List<FriendshipResponse>> getRequest() {
+        return ApiResponse.<List<FriendshipResponse>>builder()
+                .result(friendshipService.getRequest())
+                .build();
+    }
 }

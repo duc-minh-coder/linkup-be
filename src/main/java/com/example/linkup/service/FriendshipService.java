@@ -170,6 +170,34 @@ public class FriendshipService {
         }).toList();
     }
 
+    public List<FriendshipResponse> getRequest() {
+        var context = SecurityContextHolder.getContext();
+        String username = context.getAuthentication().getName();
+
+        Users user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        List<Friendships> requestList =
+                friendshipRepository.findByIdUserIdAndStatus(user.getId(), FriendshipStatus.REQUEST_RECEIVED);
+
+        List<Users> userList = new ArrayList<>();
+
+        for (Friendships friendship : requestList)
+            userList.add(friendship.getFriend());
+
+        return userList.stream().map(u -> {
+            Profiles profile = profileRepository.findById(u.getId())
+                    .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+            return FriendshipResponse.builder()
+                    .id(profile.getUserId())
+                    .fullName(profile.getFullName())
+                    .avatarUrl(profile.getAvatarUrl())
+                    .location(profile.getLocation())
+                    .build();
+        }).toList();
+    }
+
     public FriendshipStatus checkFriendship(int userId, int otherUserId) {
         if (userId == otherUserId)
             return FriendshipStatus.OWNER;
