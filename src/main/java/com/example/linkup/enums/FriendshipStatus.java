@@ -4,7 +4,9 @@ import lombok.Getter;
 
 @Getter
 public enum FriendshipStatus {
-    PENDING,
-    ACCEPTED,
-    REJECTED;
+    REQUEST_RECEIVED, // user là ng nhận
+    REQUEST_SENT, // user là ng gửi
+    FRIEND,
+    NOT_FRIEND,
+    OWNER
 }

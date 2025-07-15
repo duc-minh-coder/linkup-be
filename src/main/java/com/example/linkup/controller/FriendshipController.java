@@ -4,6 +4,7 @@ import com.example.linkup.dto.request.ApiResponse;
 import com.example.linkup.dto.request.FriendShipRequest;
 import com.example.linkup.dto.request.FriendshipHandlingRequest;
 import com.example.linkup.dto.response.FriendshipResponse;
+import com.example.linkup.enums.FriendshipStatus;
 import com.example.linkup.service.FriendshipService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -19,21 +20,17 @@ import java.util.List;
 public class FriendshipController {
     FriendshipService friendshipService;
 
-    @PostMapping
-    public ApiResponse<String> sendFriendRequest(@RequestBody FriendShipRequest request) {
-        String message = friendshipService.sendFriendRequest(request);
-
-        return ApiResponse.<String>builder()
-                .result(message)
+    @PostMapping("/send")
+    public ApiResponse<FriendshipStatus> sendFriendRequest(@RequestBody FriendshipHandlingRequest request) {
+        return ApiResponse.<FriendshipStatus>builder()
+                .result(friendshipService.sendFriendRequest(request))
                 .build();
     }
 
     @PostMapping("/handling")
-    public ApiResponse<String> handlingRequest(@RequestBody FriendshipHandlingRequest request) {
-        String message = friendshipService.handlingRequest(request);
-
-        return ApiResponse.<String>builder()
-                .result(message)
+    public ApiResponse<FriendshipStatus> handlingRequest(@RequestBody FriendshipHandlingRequest request) {
+        return ApiResponse.<FriendshipStatus>builder()
+                .result(friendshipService.handlingRequest(request))
                 .build();
     }
 

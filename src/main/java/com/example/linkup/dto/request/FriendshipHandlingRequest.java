@@ -1,5 +1,6 @@
 package com.example.linkup.dto.request;
 
+import com.example.linkup.enums.FriendshipStatus;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -9,6 +10,6 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class FriendshipHandlingRequest {
-    int senderId;
-    boolean accept;
+    int otherUserId;
+    FriendshipStatus status;
 }

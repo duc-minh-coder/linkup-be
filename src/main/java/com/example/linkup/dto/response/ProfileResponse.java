@@ -1,11 +1,10 @@
 package com.example.linkup.dto.response;
 
-import com.example.linkup.enums.RoleType;
+import com.example.linkup.enums.FriendshipStatus;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.util.Date;
-import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -19,7 +18,7 @@ public class ProfileResponse {
     private String bio;
     private String location;
     private Date birthday;
-    private RoleType role;
+    private FriendshipStatus friendshipStatus;
     private int countPost;
     private int countFriend;
 }

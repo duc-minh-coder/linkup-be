@@ -31,6 +31,8 @@ public enum ErrorCode {
     FRIEND_REQUEST_NOT_PENDING(4008, "friend request not pending", HttpStatus.NOT_FOUND),
     FRIENDSHIP_NOT_FOUND(4010, "friendship not found", HttpStatus.NOT_FOUND),
     COMMENT_NOT_EXISTED(4020, "comment not existed", HttpStatus.NOT_FOUND),
+    FRIENDSHIP_EXISTED(4030, "friendship alrealy existed", HttpStatus.BAD_REQUEST),
+    INVALID_FRIEND_REUQEST_STATUS(4040, "invalid friend request status", HttpStatus.BAD_REQUEST),
 
     ;
     private int code;

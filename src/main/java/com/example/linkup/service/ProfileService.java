@@ -77,7 +77,6 @@ public class ProfileService {
                 .orElseThrow(() -> new AppException(ErrorCode.PROFILE_NOT_EXISTED));
 
         List<FriendshipResponse> friendshipResponseList = friendshipService.getFriends(userProfile.getUserId());
-
         List<PostResponse> postResponseList = postService.getAllPostByUserId(userProfile.getUserId());
 
         return ProfileResponse.builder()
@@ -87,12 +86,7 @@ public class ProfileService {
                 .location(userProfile.getLocation())
                 .bio(userProfile.getBio())
                 .birthday(userProfile.getBirthday())
-                .role(user.getId() == userProfile.getUserId()
-                        ? RoleType.OWNER
-                        : friendshipService.isFriend(userProfile.getUserId())
-                            ? RoleType.FRIEND
-                            : RoleType.NOT_FRIEND
-                )
+                .friendshipStatus(friendshipService.checkFriendship(user.getId(), userProfile.getUserId()))
                 .countFriend(friendshipResponseList.size())
                 .countPost(postResponseList.size())
                 .build();
