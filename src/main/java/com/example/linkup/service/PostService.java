@@ -10,6 +10,7 @@ import com.example.linkup.entity.PostMedia;
 import com.example.linkup.entity.Posts;
 import com.example.linkup.entity.Users;
 import com.example.linkup.entity.keys.KeyPostLikes;
+import com.example.linkup.enums.FriendshipStatus;
 import com.example.linkup.enums.MediaType;
 import com.example.linkup.exception.AppException;
 import com.example.linkup.exception.ErrorCode;
@@ -138,32 +139,44 @@ public class PostService {
     }
 
     public List<PostResponse> getPostsByUserId(int userId, int page, int size) {
+        var context = SecurityContextHolder.getContext();
+        String username = context.getAuthentication().getName();
+
+        Users thisUser = userRepository.findByUsername(username)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
         Users user = userRepository.findById(userId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
-        Pageable pageable = PageRequest.of(page, size);
+        FriendshipStatus friendshipStatus = friendshipService.checkFriendship(thisUser.getId(), user.getId());
 
-        Page<Posts> postsPage = postRepository.findPostByUserId(user.getId(), pageable);
+        if (friendshipStatus == FriendshipStatus.FRIEND || friendshipStatus == FriendshipStatus.OWNER) {
+            Pageable pageable = PageRequest.of(page, size);
 
-        return postsPage.map(post -> {
-            KeyPostLikes key = new KeyPostLikes(user.getId(), post.getId());
-            var isLike = postLikeRepository.findById(key);
+            Page<Posts> postsPage = postRepository.findPostByUserId(user.getId(), pageable);
 
-            return PostResponse.builder()
-                    .id(post.getId())
-                    .authorId(post.getAuthor().getId())
-                    .authorName(post.getAuthor().getProfile().getFullName())
-                    .authorAvatarUrl(post.getAuthor().getProfile().getAvatarUrl())
-                    .content(post.getContent())
-                    .postMedia(post.getPostMedia().stream()
-                            .map(postMapper::postMediaToPostMediaResponse).toList())
-                    .createdTime(post.getCreatedTime())
-                    .updatedTime(post.getUpdatedTime())
-                    .userLikes(postLikeService.getLikesByPost(post.getId()))
-                    .comments(commentService.getCommentsOfPost(post.getId()))
-                    .isLiked(isLike.isPresent())
-                    .build();
-        }).toList();
+            return postsPage.map(post -> {
+                KeyPostLikes key = new KeyPostLikes(user.getId(), post.getId());
+                var isLike = postLikeRepository.findById(key);
+
+                return PostResponse.builder()
+                        .id(post.getId())
+                        .authorId(post.getAuthor().getId())
+                        .authorName(post.getAuthor().getProfile().getFullName())
+                        .authorAvatarUrl(post.getAuthor().getProfile().getAvatarUrl())
+                        .content(post.getContent())
+                        .postMedia(post.getPostMedia().stream()
+                                .map(postMapper::postMediaToPostMediaResponse).toList())
+                        .createdTime(post.getCreatedTime())
+                        .updatedTime(post.getUpdatedTime())
+                        .userLikes(postLikeService.getLikesByPost(post.getId()))
+                        .comments(commentService.getCommentsOfPost(post.getId()))
+                        .isLiked(isLike.isPresent())
+                        .build();
+            }).toList();
+        }
+
+        return new ArrayList<>();
     }
 
     public List<PostResponse> getAllPostByUserId(int userId) {
