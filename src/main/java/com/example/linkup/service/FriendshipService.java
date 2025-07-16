@@ -17,6 +17,9 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -156,6 +159,30 @@ public class FriendshipService {
 
         for (Friendships friendship : friendshipsList)
             friends.add(friendship.getFriend());
+
+        return friends.stream().map(friend -> {
+            Profiles profile = profileRepository.findById(friend.getId())
+                    .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+            return FriendshipResponse.builder()
+                    .id(friend.getId())
+                    .fullName(profile.getFullName())
+                    .avatarUrl(profile.getAvatarUrl())
+                    .location(profile.getLocation())
+                    .build();
+        }).toList();
+    }
+
+    public List<FriendshipResponse> getFriendWithPaging(int userId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<Friendships> friendshipsPage = friendshipRepository.findFriendByUserIdAndStatusWithPage(userId, FriendshipStatus.FRIEND, pageable);
+
+        List<Users> friends = new ArrayList<>();
+
+        for (Friendships friendship : friendshipsPage) {
+            friends.add(friendship.getFriend());
+        }
 
         return friends.stream().map(friend -> {
             Profiles profile = profileRepository.findById(friend.getId())
