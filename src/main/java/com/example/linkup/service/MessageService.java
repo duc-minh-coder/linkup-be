@@ -170,6 +170,35 @@ public class MessageService {
                 ).toList();
     }
 
+    public List<MessageResponse> getConversationWithFriend(int friendId, int page, int size) {
+        var context = SecurityContextHolder.getContext();
+        String username = context.getAuthentication().getName();
+
+        Users user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        Users friend = userRepository.findById(friendId)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<Messages> messageList =
+                messageRepository.findConversationBetweenUserWithPaging(user.getId(), friend.getId(), pageable);
+
+        return messageList.stream().map(message -> MessageResponse.builder()
+                .id(message.getId())
+                .senderId(message.getSender().getId())
+                .senderName(message.getSender().getProfile().getFullName())
+                .receiverId(message.getReceiver().getId())
+                .receiverName(message.getReceiver().getProfile().getFullName())
+                .content(message.getContent())
+                .type(MessageType.CHAT)
+                .createdTime(message.getCreatedTime())
+                .isRead(message.isRead())
+                .build()
+        ).toList();
+    }
+
     public void deleteConversation(int otherUserId) {
         var context = SecurityContextHolder.getContext();
         String username = context.getAuthentication().getName();

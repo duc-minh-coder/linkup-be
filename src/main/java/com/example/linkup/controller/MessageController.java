@@ -55,11 +55,22 @@ public class MessageController {
                 .build();
     }
 
-    @GetMapping("/conversation/{otherUserId}")
-    // chi tiết 1 cuộc hội thoại vs 1 otherUser
-    public ApiResponse<List<MessageResponse>> getConversation(@PathVariable int otherUserId) {
+//    @GetMapping("")
+//    // chi tiết 1 cuộc hội thoại vs 1 otherUser
+//    public ApiResponse<List<MessageResponse>> getConversation(@PathVariable int otherUserId) {
+//        return ApiResponse.<List<MessageResponse>>builder()
+//                .result(messageService.getConversation(otherUserId))
+//                .build();
+//    }
+
+    @GetMapping("/conversation/{friendId}")
+    public ApiResponse<List<MessageResponse>> getConversationWithFriend(
+            @PathVariable int friendId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
         return ApiResponse.<List<MessageResponse>>builder()
-                .result(messageService.getConversation(otherUserId))
+                .result(messageService.getConversationWithFriend(friendId, page, size))
                 .build();
     }
 
