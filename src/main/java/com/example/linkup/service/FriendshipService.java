@@ -176,7 +176,8 @@ public class FriendshipService {
     public List<FriendshipResponse> getFriendWithPaging(int userId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
 
-        Page<Friendships> friendshipsPage = friendshipRepository.findFriendByUserIdAndStatusWithPage(userId, FriendshipStatus.FRIEND, pageable);
+        Page<Friendships> friendshipsPage =
+                friendshipRepository.findFriendByUserIdAndStatusWithPage(userId, FriendshipStatus.FRIEND, pageable);
 
         List<Users> friends = new ArrayList<>();
 
@@ -218,6 +219,31 @@ public class FriendshipService {
 
             return FriendshipResponse.builder()
                     .id(profile.getUserId())
+                    .fullName(profile.getFullName())
+                    .avatarUrl(profile.getAvatarUrl())
+                    .location(profile.getLocation())
+                    .build();
+        }).toList();
+    }
+
+    public List<FriendshipResponse> getRequestWithPaging(int userId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<Friendships> friendshipsPage =
+                friendshipRepository.findFriendByUserIdAndStatusWithPage(userId, FriendshipStatus.REQUEST_RECEIVED, pageable);
+
+        List<Users> requests = new ArrayList<>();
+
+        for (Friendships request : friendshipsPage) {
+            requests.add(request.getFriend());
+        }
+
+        return requests.stream().map(request -> {
+            Profiles profile = profileRepository.findById(request.getId())
+                    .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+            return FriendshipResponse.builder()
+                    .id(request.getId())
                     .fullName(profile.getFullName())
                     .avatarUrl(profile.getAvatarUrl())
                     .location(profile.getLocation())

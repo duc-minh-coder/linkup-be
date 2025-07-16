@@ -67,4 +67,15 @@ public class FriendshipController {
                 .result(friendshipService.getRequest())
                 .build();
     }
+
+    @GetMapping("/request/{userId}")
+    public ApiResponse<List<FriendshipResponse>> getRequestWithPaging(
+            @PathVariable int userId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        return ApiResponse.<List<FriendshipResponse>>builder()
+                .result(friendshipService.getRequestWithPaging(userId, page, size))
+                .build();
+    }
 }
