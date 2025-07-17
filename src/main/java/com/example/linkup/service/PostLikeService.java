@@ -65,11 +65,11 @@ public class PostLikeService {
             isLiked = true;
         }
 
-        int likesCount = postLikeRepository.countByPostId(postId);
+//        int likesCount = postLikeRepository.countByPostId(postId);
 
         // Gửi message về cho client đang subscribe
-        simpMessagingTemplate.convertAndSend("/topic/post-like/" + postId,
-                new LikeCountOfPostResponse(postId, likesCount));
+//        simpMessagingTemplate.convertAndSend("/topic/post-like/" + postId,
+//                new LikeCountOfPostResponse(postId, likesCount));
 
         return isLiked;
     }

@@ -20,7 +20,7 @@ import java.util.List;
 public class PostLikeController {
     PostLikeService postLikeService;
 
-    @PostMapping
+    @PostMapping("/toggle-like")
     public ApiResponse<Boolean> toggleLike(@RequestParam int postId) {
         return ApiResponse.<Boolean>builder()
                 .result(postLikeService.toggleLike(postId))

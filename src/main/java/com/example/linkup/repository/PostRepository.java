@@ -20,8 +20,7 @@ public interface PostRepository extends JpaRepository<Posts, Integer> {
     List<Posts> getAllByAuthorId(@Param("authorId") Integer authorId);
 
     @Query("SELECT p FROM Posts p WHERE " +
-            "p.author.id IN :userIds " +
-            "ORDER BY p.createdTime DESC")
+            "p.author.id IN :userIds")
     Page<Posts> findPostByUserIds(List<Integer> userIds, Pageable pageable);
 
     @Query("SELECT p FROM Posts p WHERE " +
