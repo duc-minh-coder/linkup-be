@@ -1,6 +1,5 @@
 package com.example.linkup.service;
 
-import com.example.linkup.dto.request.FriendShipRequest;
 import com.example.linkup.dto.request.FriendshipHandlingRequest;
 import com.example.linkup.dto.response.FriendshipResponse;
 import com.example.linkup.entity.Friendships;
@@ -56,7 +55,7 @@ public class FriendshipService {
             throw new AppException(ErrorCode.FRIENDSHIP_EXISTED);
 
         if (request.getStatus() != FriendshipStatus.REQUEST_SENT)
-            throw new AppException(ErrorCode.INVALID_FRIEND_REUQEST_STATUS);
+            throw new AppException(ErrorCode.INVALID_FRIEND_REQUEST_STATUS);
 
         Friendships f1 = Friendships.builder()
                 .id(key1)
@@ -113,7 +112,7 @@ public class FriendshipService {
             return FriendshipStatus.NOT_FRIEND;
         }
 
-        throw new AppException(ErrorCode.INVALID_FRIEND_REUQEST_STATUS);
+        throw new AppException(ErrorCode.INVALID_FRIEND_REQUEST_STATUS);
     }
 
     public String deleteFriendship(int friendId) {

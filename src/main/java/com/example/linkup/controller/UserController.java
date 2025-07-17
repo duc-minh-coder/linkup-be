@@ -54,7 +54,7 @@ public class UserController {
 
     @PostMapping("/update-password")
     ApiResponse<UserResponse> updatePassword(
-            @RequestBody UserUpdatePasswordRequest request, @RequestHeader("Authorization") String authHeader)
+            @RequestBody @Valid UserUpdatePasswordRequest request, @RequestHeader("Authorization") String authHeader)
             throws ParseException, JOSEException {
 
         String token = authHeader.replace("Bearer ", "").trim();

@@ -1,9 +1,7 @@
 package com.example.linkup.exception;
 
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -20,7 +18,7 @@ public enum ErrorCode {
     USERNAME_INVALID(2999, "username is invalid", HttpStatus.BAD_REQUEST),
     PASSWORD_INVALID(3000, "password is invalid", HttpStatus.BAD_REQUEST),
     NAME_SHORT(1005, "name is too short", HttpStatus.BAD_REQUEST),
-    WRONG_PASSWORD(3000, "wrong password", HttpStatus.BAD_REQUEST),
+    WRONG_PASSWORD(3001, "wrong password", HttpStatus.BAD_REQUEST),
     INTERNAL_SERVER_ERROR(4004, "INTERNAL SERVER ERROR", HttpStatus.INTERNAL_SERVER_ERROR),
     FILE_UPLOAD_ERROR(4005, "file upload error", HttpStatus.BAD_REQUEST),
     INVALID_MEDIA_TYPE(4006, "invalid media type", HttpStatus.BAD_REQUEST),
@@ -32,7 +30,8 @@ public enum ErrorCode {
     FRIENDSHIP_NOT_FOUND(4010, "friendship not found", HttpStatus.NOT_FOUND),
     COMMENT_NOT_EXISTED(4020, "comment not existed", HttpStatus.NOT_FOUND),
     FRIENDSHIP_EXISTED(4030, "friendship alrealy existed", HttpStatus.BAD_REQUEST),
-    INVALID_FRIEND_REUQEST_STATUS(4040, "invalid friend request status", HttpStatus.BAD_REQUEST),
+    INVALID_FRIEND_REQUEST_STATUS(4040, "invalid friend request status", HttpStatus.BAD_REQUEST),
+    VALIDATION_ERROR(5000, "validation error", HttpStatus.BAD_REQUEST),
 
     ;
     private int code;

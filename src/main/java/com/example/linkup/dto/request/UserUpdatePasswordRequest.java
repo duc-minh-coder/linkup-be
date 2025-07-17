@@ -16,7 +16,6 @@ import java.util.Date;
 @Builder
 public class UserUpdatePasswordRequest {
     @NotNull
-    @Size(min = 8, message = "PASSWORD_INVALID")
     private String oldPassword;
 
     @NotNull
