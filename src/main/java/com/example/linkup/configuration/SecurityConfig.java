@@ -34,7 +34,7 @@ public class SecurityConfig {
             "/auth/logout",
             "/auth/refresh",
             "/auth/introspect",
-            "/profiles"      // All WebSocket sub-paths
+            "/profiles"
     };
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {

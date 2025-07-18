@@ -60,4 +60,8 @@ public class Users {
 
     @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     List<Messages> receivedMessages;
+
+    //bookmark
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    List<Bookmarks> bookmarks;
 }

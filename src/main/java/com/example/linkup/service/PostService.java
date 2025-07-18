@@ -381,6 +381,35 @@ public class PostService {
         }).toList();
     }
 
+    public PostResponse getPostById(int id) {
+        var context = SecurityContextHolder.getContext();
+        String username = context.getAuthentication().getName();
+
+        Users user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        Posts post = postRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.POST_NOT_EXISTED));
+
+        KeyPostLikes key = new KeyPostLikes(user.getId(), post.getId());
+        var isLike = postLikeRepository.findById(key);
+
+        return PostResponse.builder()
+                .id(post.getId())
+                .authorId(post.getAuthor().getId())
+                .authorName(post.getAuthor().getProfile().getFullName())
+                .authorAvatarUrl(post.getAuthor().getProfile().getAvatarUrl())
+                .content(post.getContent())
+                .postMedia(post.getPostMedia().stream()
+                        .map(postMapper::postMediaToPostMediaResponse).toList())
+                .createdTime(post.getCreatedTime())
+                .updatedTime(post.getUpdatedTime())
+                .userLikes(postLikeService.getLikesByPost(post.getId()))
+                .comments(commentService.getCommentsOfPost(post.getId()))
+                .isLiked(isLike.isPresent())
+                .build();
+    }
+
     public PostResponse sharePost(int postId) {
         var context = SecurityContextHolder.getContext();
         String username = context.getAuthentication().getName();
