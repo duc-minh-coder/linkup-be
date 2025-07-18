@@ -9,12 +9,14 @@ import com.example.linkup.entity.Friendships;
 import com.example.linkup.entity.PostMedia;
 import com.example.linkup.entity.Posts;
 import com.example.linkup.entity.Users;
+import com.example.linkup.entity.keys.KeyBookmarks;
 import com.example.linkup.entity.keys.KeyPostLikes;
 import com.example.linkup.enums.FriendshipStatus;
 import com.example.linkup.enums.MediaType;
 import com.example.linkup.exception.AppException;
 import com.example.linkup.exception.ErrorCode;
 import com.example.linkup.mapper.PostMapper;
+import com.example.linkup.repository.BookmarkRepository;
 import com.example.linkup.repository.PostLikeRepository;
 import com.example.linkup.repository.PostRepository;
 import com.example.linkup.repository.UserRepository;
@@ -46,6 +48,7 @@ public class PostService {
     PostLikeService postLikeService;
     CommentService commentService;
     PostLikeRepository postLikeRepository;
+    BookmarkRepository bookmarkRepository;
 
     public PostResponse createPost(PostRequest request) {
         var context = SecurityContextHolder.getContext();
@@ -160,6 +163,9 @@ public class PostService {
                 KeyPostLikes key = new KeyPostLikes(user.getId(), post.getId());
                 var isLike = postLikeRepository.findById(key);
 
+                KeyBookmarks keyBookmarks = new KeyBookmarks(user.getId(), post.getId());
+                var saved = bookmarkRepository.findById(keyBookmarks);
+
                 return PostResponse.builder()
                         .id(post.getId())
                         .authorId(post.getAuthor().getId())
@@ -172,6 +178,7 @@ public class PostService {
                         .updatedTime(post.getUpdatedTime())
                         .userLikes(postLikeService.getLikesByPost(post.getId()))
                         .comments(commentService.getCommentsOfPost(post.getId()))
+                        .saved(saved.isPresent())
                         .isLiked(isLike.isPresent())
                         .build();
             }).toList();
@@ -187,19 +194,29 @@ public class PostService {
         List<Posts> postList = postRepository.getAllByAuthorId(userId);
 
         return postList.stream()
-                .map(post -> PostResponse.builder()
-                        .id(post.getId())
-                        .authorId(userId)
-                        .authorName(user.getProfile().getFullName())
-                        .authorAvatarUrl(user.getProfile().getAvatarUrl())
-                        .content(post.getContent())
-                        .createdTime(post.getCreatedTime())
-                        .updatedTime(post.getUpdatedTime())
-                        .postMedia(post.getPostMedia().stream()
-                                .map(postMapper::postMediaToPostMediaResponse).toList())
-                        .userLikes(postLikeService.getLikesByPost(post.getId()))
-                        .comments(commentService.getCommentsOfPost(post.getId()))
-                        .build()).toList();
+                .map(post -> {
+                    KeyBookmarks keyBookmarks = new KeyBookmarks(user.getId(), post.getId());
+                    var saved = bookmarkRepository.findById(keyBookmarks);
+
+                    KeyPostLikes key = new KeyPostLikes(user.getId(), post.getId());
+                    var isLike = postLikeRepository.findById(key);
+
+                    return PostResponse.builder()
+                            .id(post.getId())
+                            .authorId(userId)
+                            .authorName(user.getProfile().getFullName())
+                            .authorAvatarUrl(user.getProfile().getAvatarUrl())
+                            .content(post.getContent())
+                            .createdTime(post.getCreatedTime())
+                            .updatedTime(post.getUpdatedTime())
+                            .postMedia(post.getPostMedia().stream()
+                                    .map(postMapper::postMediaToPostMediaResponse).toList())
+                            .userLikes(postLikeService.getLikesByPost(post.getId()))
+                            .comments(commentService.getCommentsOfPost(post.getId()))
+                            .saved(saved.isPresent())
+                            .isLiked(isLike.isPresent())
+                            .build();
+                }).toList();
     }
 
     public PostResponse updatePost(int postId, UpdatePostRequest request) {
@@ -325,20 +342,24 @@ public class PostService {
             KeyPostLikes key = new KeyPostLikes(user.getId(), post.getId());
             var isLike = postLikeRepository.findById(key);
 
+            KeyBookmarks keyBookmarks = new KeyBookmarks(user.getId(), post.getId());
+            var saved = bookmarkRepository.findById(keyBookmarks);
+
             return PostResponse.builder()
-                .id(post.getId())
-                .authorId(post.getAuthor().getId())
-                .authorName(post.getAuthor().getProfile().getFullName())
-                .authorAvatarUrl(post.getAuthor().getProfile().getAvatarUrl())
-                .isLiked(isLike.isPresent())
-                .content(post.getContent())
-                .createdTime(post.getCreatedTime())
-                .updatedTime(post.getUpdatedTime())
-                .postMedia(post.getPostMedia().stream()
-                        .map(postMapper::postMediaToPostMediaResponse).toList())
-                .userLikes(postLikeService.getLikesByPost(post.getId()))
-                .comments(commentService.getCommentsOfPost(post.getId()))
-                .build();
+                    .id(post.getId())
+                    .authorId(post.getAuthor().getId())
+                    .authorName(post.getAuthor().getProfile().getFullName())
+                    .authorAvatarUrl(post.getAuthor().getProfile().getAvatarUrl())
+                    .isLiked(isLike.isPresent())
+                    .saved(saved.isPresent())
+                    .content(post.getContent())
+                    .createdTime(post.getCreatedTime())
+                    .updatedTime(post.getUpdatedTime())
+                    .postMedia(post.getPostMedia().stream()
+                            .map(postMapper::postMediaToPostMediaResponse).toList())
+                    .userLikes(postLikeService.getLikesByPost(post.getId()))
+                    .comments(commentService.getCommentsOfPost(post.getId()))
+                    .build();
         }).toList();
     }
 
@@ -364,6 +385,9 @@ public class PostService {
             KeyPostLikes key = new KeyPostLikes(user.getId(), post.getId());
             var isLike = postLikeRepository.findById(key);
 
+            KeyBookmarks keyBookmarks = new KeyBookmarks(user.getId(), post.getId());
+            var saved = bookmarkRepository.findById(keyBookmarks);
+
             return PostResponse.builder()
                     .id(post.getId())
                     .authorId(post.getAuthor().getId())
@@ -377,6 +401,7 @@ public class PostService {
                     .userLikes(postLikeService.getLikesByPost(post.getId()))
                     .comments(commentService.getCommentsOfPost(post.getId()))
                     .isLiked(isLike.isPresent())
+                    .saved(saved.isPresent())
                     .build();
         }).toList();
     }
@@ -410,6 +435,7 @@ public class PostService {
                 .build();
     }
 
+    //
     public PostResponse sharePost(int postId) {
         var context = SecurityContextHolder.getContext();
         String username = context.getAuthentication().getName();

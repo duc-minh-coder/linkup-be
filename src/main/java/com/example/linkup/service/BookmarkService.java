@@ -7,9 +7,11 @@ import com.example.linkup.entity.Bookmarks;
 import com.example.linkup.entity.Posts;
 import com.example.linkup.entity.Users;
 import com.example.linkup.entity.keys.KeyBookmarks;
+import com.example.linkup.entity.keys.KeyPostLikes;
 import com.example.linkup.exception.AppException;
 import com.example.linkup.exception.ErrorCode;
 import com.example.linkup.repository.BookmarkRepository;
+import com.example.linkup.repository.PostLikeRepository;
 import com.example.linkup.repository.PostRepository;
 import com.example.linkup.repository.UserRepository;
 import lombok.AccessLevel;
@@ -34,6 +36,7 @@ public class BookmarkService {
     UserRepository userRepository;
     PostService postService;
     PostRepository postRepository;
+    PostLikeRepository postLikeRepository;
 
     public String updateBookmark(BookmarkRequest request) {
         var context = SecurityContextHolder.getContext();
@@ -82,6 +85,11 @@ public class BookmarkService {
 
         return bookmarksPage.map(bookmark -> {
             PostResponse post = postService.getPostById(bookmark.getPost().getId());
+
+            KeyBookmarks keyBookmarks = new KeyBookmarks(user.getId(), post.getId());
+            var saved = bookmarkRepository.findById(keyBookmarks);
+
+            post.setSaved(saved.isPresent());
 
             return BookmarkResponse.builder()
                     .postResponse(post)

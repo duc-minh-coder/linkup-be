@@ -25,6 +25,8 @@ public class PostResponse {
 
     boolean isLiked;
 
+    boolean saved;
+
     Integer originalPostId;
 
     List<PostMediaResponse> postMedia;
