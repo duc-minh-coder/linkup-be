@@ -24,6 +24,9 @@
         @NotNull
         String fullName;
 
+        @Column(name = "last_name_change_time")
+        Date lastNameChangeTime;
+
         @Column(name = "profile_picture_url")
         @Builder.Default
         String profilePictureUrl = null;

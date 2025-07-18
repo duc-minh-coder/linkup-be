@@ -60,6 +60,7 @@ public class ProfileService {
         return ProfileResponse.builder()
                 .id(users.getProfile().getUserId())
                 .fullName(users.getProfile().getFullName())
+                .timeNameChange(users.getProfile().getLastNameChangeTime())
                 .avatarUrl(users.getProfile().getAvatarUrl())
                 .location(users.getProfile().getLocation())
                 .bio(users.getProfile().getBio())
@@ -85,6 +86,7 @@ public class ProfileService {
         return ProfileResponse.builder()
                 .id(userProfile.getUserId())
                 .fullName(userProfile.getFullName())
+                .timeNameChange(userProfile.getLastNameChangeTime())
                 .avatarUrl(userProfile.getAvatarUrl())
                 .location(userProfile.getLocation())
                 .bio(userProfile.getBio())
@@ -128,8 +130,17 @@ public class ProfileService {
         Profiles profiles = profileRepository.findById(userId)
                 .orElseThrow(() -> new AppException(ErrorCode.PROFILE_NOT_EXISTED));
 
-        if (request.getFullName() != null)
+        if (request.getFullName() != null) {
+            Date now = new Date();
+            long timeLimit =  30L * 24 * 60 * 60 * 1000;
+
+            if (profiles.getLastNameChangeTime() != null && now.getTime() - profiles.getLastNameChangeTime().getTime() < timeLimit) {
+                throw new AppException(ErrorCode.NAME_CHANGE_TOO_SOON);
+            }
+
+            profiles.setLastNameChangeTime(new Date());
             profiles.setFullName(request.getFullName());
+        }
 
         if (request.getBio() != null)
             profiles.setBio(request.getBio());
@@ -138,7 +149,15 @@ public class ProfileService {
 
         profileRepository.save(profiles);
 
-        return profileMapper.profilesToProfileResponse(profiles);
+        return ProfileResponse.builder()
+                .id(users.getProfile().getUserId())
+                .fullName(users.getProfile().getFullName())
+                .timeNameChange(users.getProfile().getLastNameChangeTime())
+                .avatarUrl(users.getProfile().getAvatarUrl())
+                .location(users.getProfile().getLocation())
+                .bio(users.getProfile().getBio())
+                .birthday(users.getProfile().getBirthday())
+                .build();
     }
 
     public String updateAvatar(MultipartFile avatar) {

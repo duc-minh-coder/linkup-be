@@ -6,6 +6,7 @@ import com.example.linkup.dto.request.SearchProfileRequest;
 import com.example.linkup.dto.response.ProfileResponse;
 import com.example.linkup.dto.response.SearchProfileResponse;
 import com.example.linkup.service.ProfileService;
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -61,7 +62,7 @@ public class ProfileController {
     }
 
     @PostMapping("/update-profile")
-    ApiResponse<ProfileResponse> updateProfile(@RequestBody ProfileRequest request) {
+    ApiResponse<ProfileResponse> updateProfile(@RequestBody @Valid ProfileRequest request) {
         return ApiResponse.<ProfileResponse>builder()
                 .result(profileService.updateProfile(request))
                 .build();

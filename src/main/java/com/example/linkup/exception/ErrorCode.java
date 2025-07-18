@@ -32,6 +32,8 @@ public enum ErrorCode {
     FRIENDSHIP_EXISTED(4030, "friendship alrealy existed", HttpStatus.BAD_REQUEST),
     INVALID_FRIEND_REQUEST_STATUS(4040, "invalid friend request status", HttpStatus.BAD_REQUEST),
     VALIDATION_ERROR(5000, "validation error", HttpStatus.BAD_REQUEST),
+    NAME_CHANGE_TOO_SOON(6666, "name change too soon", HttpStatus.BAD_REQUEST),
+    NAME_INVALID(4844, "name are limited to 3-20 letters only", HttpStatus.BAD_REQUEST),
 
     ;
     private int code;
