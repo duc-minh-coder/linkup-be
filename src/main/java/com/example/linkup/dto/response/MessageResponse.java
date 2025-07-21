@@ -14,7 +14,7 @@ import java.util.Date;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
+@Builder(toBuilder = true)
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class MessageResponse {
     int id;
@@ -24,6 +24,7 @@ public class MessageResponse {
     String receiverName;
     String content;
     Date createdTime;
+    boolean isSenderByCurrentUser;
     boolean isRead;
     MessageType type;
 }

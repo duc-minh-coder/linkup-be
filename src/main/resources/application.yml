@@ -18,7 +18,7 @@ server:
   post: 8080
   address: 0.0.0.0
   servlet:
-    context-path: /api
+    context-path: /
 jwt:
   signerKey: "Rc8al3ynqFVftBEV36zVbQAFhOX10h3HkrKGVmAnOipKtNIExStX4jcmligLAcNG"
   valid-duration: 36000 # in seconds

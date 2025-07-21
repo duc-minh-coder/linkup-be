@@ -44,6 +44,7 @@ public class SecurityConfig {
                 request
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINT).permitAll()
+                        .requestMatchers("/ws/**").permitAll()
                         .anyRequest().authenticated()
                 );
 
@@ -81,8 +82,8 @@ public class SecurityConfig {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
 
         corsConfiguration.addAllowedOrigin("http://localhost:3000");
-        corsConfiguration.addAllowedOrigin("*");
-//        corsConfiguration.setAllowCredentials(true);
+        corsConfiguration.addAllowedOrigin("http://192.168.1.16:3000");
+        corsConfiguration.setAllowCredentials(true); //phải mở vì có token
         corsConfiguration.addAllowedHeader("*");
         corsConfiguration.addAllowedMethod("*");
 

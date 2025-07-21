@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/messages")
+@RequestMapping("/api/messages")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class MessageController {
@@ -28,12 +28,17 @@ public class MessageController {
     public ApiResponse<MessageResponse> sendMessage(@RequestBody MessageRequest request) {
         MessageResponse message = messageService.sendMessage(request);
 
-        // gửi qua ws
+        // gửi tn đến ng nhận
         messagingTemplate.convertAndSendToUser(
                 String.valueOf(request.getReceiverId()),
                 "/queue/messages",
                 message
         );
+
+        // gửi lại cho user để cập nhật UI
+        MessageResponse senderMessage = message.toBuilder()
+
+                .build();
 
         return ApiResponse.<MessageResponse>builder()
                 .result(message)

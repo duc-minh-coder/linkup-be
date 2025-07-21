@@ -1,5 +1,6 @@
 package com.example.linkup.service;
 
+import com.example.linkup.dto.request.ChatMessage;
 import com.example.linkup.dto.request.MessageGetListConversationWithFriendsRequest;
 import com.example.linkup.dto.request.MessageRequest;
 import com.example.linkup.dto.response.ConversationResponse;
@@ -249,5 +250,23 @@ public class MessageService {
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
         return messageRepository.countUnreadMessages(user.getId());
+    }
+
+    public void saveMessage(ChatMessage message) {
+        Users sender = userRepository.findById(message.getSenderId())
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        Users receiver = userRepository.findById(message.getReceiverId())
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        Messages messages = Messages.builder()
+                .sender(sender)
+                .receiver(receiver)
+                .content(message.getContent())
+                .createdTime(message.getCreatedTime() != null ? message.getCreatedTime() : new Date())
+                .isRead(false)
+                .build();
+
+        messageRepository.save(messages);
     }
 }
