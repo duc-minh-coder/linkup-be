@@ -6,6 +6,8 @@ import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBr
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 
+import static com.example.linkup.constant.AllowedOrigins.ORIGINS;
+
 @Configuration
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
@@ -19,9 +21,10 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/ws")          // Endpoint kết nối WebSocket
-                .setAllowedOrigins("http://localhost:3000", "http://192.168.1.16:3000") // tránh bị cors
-//                .setAllowedOriginPatterns("*") // Cho phép mọi origin
+        registry.addEndpoint("/ws")     // endpoint kết nối ws
+                .addInterceptors(new CustomHandshakeInterceptor())
+                .setHandshakeHandler(new UserHandshakeHandler())
+                .setAllowedOrigins(ORIGINS) // tránh bị cors
                 .withSockJS();                // Hỗ trợ SockJS fallback
     }
 }

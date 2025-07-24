@@ -20,6 +20,11 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
+import java.util.Arrays;
+import java.util.Collections;
+
+import static com.example.linkup.constant.AllowedOrigins.ORIGINS;
+
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
@@ -81,8 +86,7 @@ public class SecurityConfig {
     CorsFilter corsFilter() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
 
-        corsConfiguration.addAllowedOrigin("http://localhost:3000");
-        corsConfiguration.addAllowedOrigin("http://192.168.1.16:3000");
+        Arrays.stream(ORIGINS).forEach(corsConfiguration::addAllowedOrigin);
         corsConfiguration.setAllowCredentials(true); //phải mở vì có token
         corsConfiguration.addAllowedHeader("*");
         corsConfiguration.addAllowedMethod("*");
