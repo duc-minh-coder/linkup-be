@@ -106,6 +106,18 @@
 			<version>1.39.0</version>
 		</dependency>
 
+		<!--redis-->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-redis</artifactId>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/io.lettuce/lettuce-core -->
+		<dependency>
+			<groupId>io.lettuce</groupId>
+			<artifactId>lettuce-core</artifactId>
+			<version>6.7.1.RELEASE</version>
+		</dependency>
 	</dependencies>
 
 	<build>

@@ -4,6 +4,7 @@ import com.example.linkup.dto.request.ChatMessage;
 import com.example.linkup.dto.response.ChatMessageResponse;
 import com.example.linkup.enums.MessageType;
 import com.example.linkup.service.MessageService;
+import com.example.linkup.service.OnlineUserService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -27,6 +28,7 @@ import java.util.Objects;
 public class ChatController {
     SimpMessagingTemplate messagingTemplate;
     MessageService messageService;
+    OnlineUserService onlineUserService;
 
     @MessageMapping("/chat.sendMessage")
     public void sendMessage(@Payload ChatMessage message) {
@@ -34,11 +36,15 @@ public class ChatController {
 
         messageService.saveMessage(message);
 
-        // gửi đến receiver(client sẽ vào /user/{receiverId}/queue/messages
+        // gửi đến receiver(client sẽ vào /user/{receiverId}/user/queue/messages
         messagingTemplate.convertAndSendToUser(
                 String.valueOf(message.getReceiverId()),
                 "/queue/messages",
                 message);
+
+        if (message.getType() == MessageType.ONLINE) {
+            onlineUserService.setOnlineUser(message.getSenderId());
+        }
     }
 
     @MessageMapping("/chat.typing")
@@ -68,11 +74,18 @@ public class ChatController {
     public void addUser(@Payload ChatMessage message,
                                SimpMessageHeaderAccessor simpMessageHeaderAccessor) {
 
+        Integer senderId = message.getSenderId();
+
         Objects.requireNonNull(
-                simpMessageHeaderAccessor.getSessionAttributes()).put("senderId", message.getSenderId()
+                simpMessageHeaderAccessor.getSessionAttributes()).put("senderId", senderId
         );
 
-        message.setType(MessageType.OFFLINE);
+        if (message.getType() == MessageType.ONLINE) {
+            onlineUserService.setOnlineUser(message.getSenderId());
+        } else if (message.getType() == MessageType.OFFLINE) {
+            onlineUserService.setOfflineUser(message.getSenderId());
+        }
+
         messagingTemplate.convertAndSend("/topic/status", message);
     }
 }
