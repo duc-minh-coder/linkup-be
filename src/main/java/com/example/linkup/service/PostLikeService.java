@@ -32,6 +32,7 @@ public class PostLikeService {
     UserRepository userRepository;
     PostRepository postRepository;
     ProfileRepository profileRepository;
+    NotificationService notificationService;
     SimpMessagingTemplate simpMessagingTemplate;
 
     public Boolean toggleLike(int postId) {
@@ -61,6 +62,12 @@ public class PostLikeService {
                     .build();
 
             postLikeRepository.save(postLikes);
+
+            notificationService.likePostNotification(
+                    postLikes.getPost().getAuthor().getId(),
+                    postLikes.getUser().getId(),
+                    postLikes.getPost().getId()
+            );
 
             isLiked = true;
         }

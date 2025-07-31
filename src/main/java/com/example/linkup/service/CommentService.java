@@ -29,6 +29,7 @@ public class CommentService {
     ProfileRepository profileRepository;
     PostRepository postRepository;
     UserRepository userRepository;
+    NotificationService notificationService;
 
     public CommentResponse createComment(CommentRequest request) {
         var context = SecurityContextHolder.getContext();
@@ -54,6 +55,13 @@ public class CommentService {
                 .build();
 
         Comments commentsSaved = commentRepository.save(comments);
+
+        notificationService.commentPostNotification(
+                post.getAuthor().getId(),
+                user.getId(),
+                post.getId(),
+                commentsSaved
+        );
 
         return CommentResponse.builder()
                 .id(commentsSaved.getId())

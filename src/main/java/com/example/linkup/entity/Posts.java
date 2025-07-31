@@ -47,4 +47,7 @@ public class Posts {
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     List<Bookmarks> bookmarks;
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    List<Notifications> notifications;
 }

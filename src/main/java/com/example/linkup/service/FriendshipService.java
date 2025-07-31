@@ -34,6 +34,7 @@ public class FriendshipService {
     FriendshipRepository friendshipRepository;
     UserRepository userRepository;
     ProfileRepository profileRepository;
+    NotificationService notificationService;
 
     public FriendshipStatus sendFriendRequest(FriendshipHandlingRequest request) {
         var context = SecurityContextHolder.getContext();
@@ -76,6 +77,8 @@ public class FriendshipService {
         friendshipRepository.save(f1);
         friendshipRepository.save(f2);
 
+        notificationService.sendFriendRequestNotification(receiver.getId(), sender.getId());
+
         return FriendshipStatus.REQUEST_SENT;
     }
 
@@ -102,6 +105,8 @@ public class FriendshipService {
             friendship2.setStatus(FriendshipStatus.FRIEND);
             friendshipRepository.save(friendship1);
             friendshipRepository.save(friendship2);
+
+            notificationService.acceptedRequestNotification(otherUser.getId(), user.getId());
 
             return FriendshipStatus.FRIEND;
         }

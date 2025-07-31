@@ -64,4 +64,11 @@ public class Users {
     //bookmark
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     List<Bookmarks> bookmarks;
+
+    //notifications
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    List<Notifications> receiverNotifications;
+
+    @OneToMany(mappedBy = "actor", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    List<Notifications> sentNotifications;
 }
