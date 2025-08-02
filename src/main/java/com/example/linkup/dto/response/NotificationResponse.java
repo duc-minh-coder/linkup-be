@@ -19,6 +19,7 @@ public class NotificationResponse {
     String actorAvt;
     Integer postId;
     Integer commentId;
+    boolean isRead;
     NotificationType type;
     Date createdTime;
 }

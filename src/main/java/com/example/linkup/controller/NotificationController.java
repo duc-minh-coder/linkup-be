@@ -6,9 +6,7 @@ import com.example.linkup.service.NotificationService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -23,6 +21,20 @@ public class NotificationController {
     ApiResponse<List<NotificationResponse>> getListNotification() {
         return ApiResponse.<List<NotificationResponse>>builder()
                 .result(notificationService.getListNotification())
+                .build();
+    }
+
+    @PostMapping("/{notificationId}/read")
+    ApiResponse<String> markAsRead(@PathVariable int notificationId) {
+        return ApiResponse.<String>builder()
+                .result(notificationService.markAsRead(notificationId))
+                .build();
+    }
+
+    @PostMapping("/read-all")
+    ApiResponse<String> markAllRead() {
+        return ApiResponse.<String>builder()
+                .result(notificationService.markAllRead())
                 .build();
     }
 }

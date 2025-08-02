@@ -26,6 +26,45 @@ public class NotificationService {
     UserRepository userRepository;
     PostRepository postRepository;
 
+    public String markAsRead(int notificationId) {
+        var context = SecurityContextHolder.getContext();
+        String username = context.getAuthentication().getName();
+
+        Users user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        Notifications notification = notificationRepository.findById(notificationId)
+                .orElseThrow(() -> new AppException(ErrorCode.NOTIFICATION_NOT_EXISTED));
+
+        if (user.getId() != notification.getUser().getId())
+            throw new AppException(ErrorCode.NOTIFICATION_FORBIDEN);
+
+        notification.setRead(true);
+
+        notificationRepository.save(notification);
+
+        return "had read";
+    }
+
+    public String markAllRead() {
+        var context = SecurityContextHolder.getContext();
+        String username = context.getAuthentication().getName();
+
+        Users user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        List<Notifications> notificationsList = notificationRepository.findByUserId(user.getId());
+
+        List<Notifications> unreadNotifications = notificationsList.stream()
+                .filter(notification -> !notification.isRead())
+                .peek(notification -> notification.setRead(true))
+                .toList();
+
+        notificationRepository.saveAll(unreadNotifications);
+
+        return "read all";
+    }
+
     public List<NotificationResponse> getListNotification() {
         var context = SecurityContextHolder.getContext();
         String username = context.getAuthentication().getName();
@@ -43,6 +82,7 @@ public class NotificationService {
                         .actorName(notification.getActor().getProfile().getFullName())
                         .actorAvt(notification.getActor().getProfile().getAvatarUrl())
                         .type(notification.getType())
+                        .isRead(notification.isRead())
                         .postId(notification.getPost() != null ? notification.getPost().getId() : null)
                         .commentId(notification.getComment() != null ? notification.getComment().getId() : null)
                         .build()).toList();

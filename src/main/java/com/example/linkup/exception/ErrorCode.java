@@ -29,11 +29,13 @@ public enum ErrorCode {
     FRIEND_REQUEST_NOT_PENDING(4008, "friend request not pending", HttpStatus.NOT_FOUND),
     FRIENDSHIP_NOT_FOUND(4010, "friendship not found", HttpStatus.NOT_FOUND),
     COMMENT_NOT_EXISTED(4020, "comment not existed", HttpStatus.NOT_FOUND),
-    FRIENDSHIP_EXISTED(4030, "friendship alrealy existed", HttpStatus.BAD_REQUEST),
+    FRIENDSHIP_EXISTED(4030, "friendship already existed", HttpStatus.BAD_REQUEST),
     INVALID_FRIEND_REQUEST_STATUS(4040, "invalid friend request status", HttpStatus.BAD_REQUEST),
     VALIDATION_ERROR(5000, "validation error", HttpStatus.BAD_REQUEST),
     NAME_CHANGE_TOO_SOON(6666, "name change too soon", HttpStatus.BAD_REQUEST),
     NAME_INVALID(4844, "name are limited to 3-20 letters only", HttpStatus.BAD_REQUEST),
+    NOTIFICATION_NOT_EXISTED(5000, "notification not existed", HttpStatus.NOT_FOUND),
+    NOTIFICATION_FORBIDEN(5001, "u don't have permission at this notification", HttpStatus.BAD_REQUEST),
 
     ;
     private int code;
