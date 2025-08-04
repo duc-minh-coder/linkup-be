@@ -80,9 +80,16 @@ public class PostController {
     }
 
     @PostMapping("/share")
-    public ApiResponse<PostResponse> sharePost(@RequestParam int postId) {
+    public ApiResponse<PostResponse> sharePost(@PathVariable int postId) {
         return ApiResponse.<PostResponse>builder()
                 .result(postService.sharePost(postId))
+                .build();
+    }
+
+    @GetMapping("/{postId}")
+    public ApiResponse<PostResponse> getPostById(@PathVariable int postId) {
+        return ApiResponse.<PostResponse>builder()
+                .result(postService.getPostById(postId))
                 .build();
     }
 }

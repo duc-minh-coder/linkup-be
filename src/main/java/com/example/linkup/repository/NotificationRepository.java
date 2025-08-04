@@ -24,4 +24,8 @@ public interface NotificationRepository extends JpaRepository<Notifications, Int
             "n.user.id = :userId"
             )
     int setReadNotification(int userId);
+
+    @Query("SELECT COUNT(n) > 0 FROM Notifications n WHERE " +
+            "n.actor.id = :actorId AND n.post.id = :postId")
+    boolean checkLike(int actorId, int postId);
 }

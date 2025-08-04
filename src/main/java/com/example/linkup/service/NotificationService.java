@@ -91,6 +91,12 @@ public class NotificationService {
     public void createNotification(int receiverId, int actorId, NotificationType type, Posts post, Comments comment) {
         if (receiverId == actorId) return;
 
+        if (type == NotificationType.POST_LIKE) {
+            if (notificationRepository.checkLike(actorId, post.getId())) {
+                return;
+            }
+        }
+
         Users receiver = userRepository.findById(receiverId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
         Users actor = userRepository.findById(actorId)
