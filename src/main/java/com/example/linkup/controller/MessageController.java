@@ -101,4 +101,11 @@ public class MessageController {
                 .result(messageService.getUnReadCount())
                 .build();
     }
+
+    @PostMapping("/mark-read")
+    ApiResponse<Void> markRead(@RequestParam int otherUserId) {
+        System.out.println("da goi");
+        messageService.markRead(otherUserId);
+        return ApiResponse.<Void>builder().build();
+    }
 }

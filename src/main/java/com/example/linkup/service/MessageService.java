@@ -24,6 +24,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -34,6 +35,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Transactional
 public class MessageService {
     MessageRepository messageRepository;
     UserRepository userRepository;
@@ -116,11 +118,13 @@ public class MessageService {
             boolean userSentLast = false;
             String lastMessage = null;
             Date lastMessageTime = null;
+            boolean isRead = false;
 
             if (message != null) {
                 userSentLast = message.getSender().getId() == user.getId();
                 lastMessage = message.getContent();
                 lastMessageTime = message.getCreatedTime();
+                isRead = message.isRead();
             }
                 ConversationResponse conversationResponse = ConversationResponse.builder()
                         .userId(friend.getId())
@@ -129,6 +133,7 @@ public class MessageService {
                         .lastMessage(lastMessage)
                         .lastMessageTime(lastMessageTime)
                         .userSentLast(userSentLast)
+                        .isRead(isRead)
                         .build();
 
                 listConversation.add(conversationResponse);
@@ -268,5 +273,21 @@ public class MessageService {
                 .build();
 
         messageRepository.save(messages);
+    }
+
+    public void markRead(int otherUserId) {
+        var context = SecurityContextHolder.getContext();
+        String username = context.getAuthentication().getName();
+
+        Users user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        List<Messages> messagesList = messageRepository.findUnreadMessages(otherUserId, user.getId());
+
+        for (Messages message : messagesList) {
+            message.setRead(true);
+        }
+
+        messageRepository.saveAll(messagesList);
     }
 }
