@@ -6,6 +6,7 @@ import com.example.linkup.dto.request.MessageRequest;
 import com.example.linkup.dto.response.ConversationResponse;
 import com.example.linkup.dto.response.FriendshipResponse;
 import com.example.linkup.dto.response.MessageResponse;
+import com.example.linkup.entity.Friendships;
 import com.example.linkup.entity.Messages;
 import com.example.linkup.entity.Users;
 import com.example.linkup.entity.keys.KeyFriendships;
@@ -27,9 +28,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -60,8 +59,6 @@ public class MessageService {
                 .build();
 
         Messages savedMessage = messageRepository.save(message);
-
-        log.info("User {} gửi tin nhắn cho {}: {}", sender.getId(), receiver.getId(), request.getContent());
 
         return MessageResponse.builder()
                 .senderId(savedMessage.getSender().getId())
@@ -255,6 +252,36 @@ public class MessageService {
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
         return messageRepository.countUnreadMessages(user.getId());
+    }
+
+    public Map<Integer, Long> getUnreadCounts() {
+        var context = SecurityContextHolder.getContext();
+        String username = context.getAuthentication().getName();
+
+        Users user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        List<FriendshipResponse> friendshipsList = friendshipService.getFriends(user.getId());
+
+        Map<Integer, Long> unreadCounts = new HashMap<>();
+
+        for (FriendshipResponse friend : friendshipsList) {
+            long unread = messageRepository.countUnreadMessagesBetweenUser(friend.getId(), user.getId());
+
+            unreadCounts.put(friend.getId(), unread);
+        }
+
+        return unreadCounts;
+    }
+
+    public long getUnReadCountBetweenUser(int otherUserId) {
+        var context = SecurityContextHolder.getContext();
+        String username = context.getAuthentication().getName();
+
+        Users user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        return messageRepository.countUnreadMessagesBetweenUser(otherUserId, user.getId());
     }
 
     public void saveMessage(ChatMessage message) {

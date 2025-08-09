@@ -1,7 +1,7 @@
 package com.example.linkup.controller;
 
 import com.example.linkup.dto.request.ChatMessage;
-import com.example.linkup.dto.response.ChatMessageResponse;
+import com.example.linkup.dto.response.UnreadMessagesCountResponse;
 import com.example.linkup.enums.MessageType;
 import com.example.linkup.service.MessageService;
 import com.example.linkup.service.OnlineUserService;
@@ -11,12 +11,9 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Date;
 import java.util.Objects;
@@ -42,9 +39,16 @@ public class ChatController {
                 "/queue/messages",
                 message);
 
-        if (message.getType() == MessageType.ONLINE) {
+        if (message.getType() == MessageType.ONLINE)
             onlineUserService.setOnlineUser(message.getSenderId());
-        }
+
+        long unreadCount = messageService.getUnReadCountBetweenUser(message.getSenderId());
+
+        messagingTemplate.convertAndSendToUser(
+                String.valueOf(message.getReceiverId()),
+                "/queue/unread-count",
+                new UnreadMessagesCountResponse(message.getSenderId(), unreadCount)
+        );
     }
 
     @MessageMapping("/chat.typing")
@@ -70,7 +74,6 @@ public class ChatController {
     }
 
     @MessageMapping("/chat.addUser")
-//    @SendTo("/topic/public")
     public void addUser(@Payload ChatMessage message,
                                SimpMessageHeaderAccessor simpMessageHeaderAccessor) {
 

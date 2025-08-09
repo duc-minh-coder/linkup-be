@@ -15,6 +15,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/messages")
@@ -95,16 +96,15 @@ public class MessageController {
                 .build();
     }
 
-    @GetMapping("/unread-count")
-    public ApiResponse<Long> getUnReadCount() {
-        return ApiResponse.<Long>builder()
-                .result(messageService.getUnReadCount())
+    @GetMapping("/unread-counts")
+    public ApiResponse<Map<Integer, Long>> getUnReadCount() {
+        return ApiResponse.<Map<Integer, Long>>builder()
+                .result(messageService.getUnreadCounts())
                 .build();
     }
 
     @PostMapping("/mark-read")
     ApiResponse<Void> markRead(@RequestParam int otherUserId) {
-        System.out.println("da goi");
         messageService.markRead(otherUserId);
         return ApiResponse.<Void>builder().build();
     }
