@@ -1,5 +1,6 @@
 package com.example.linkup.repository;
 
+import com.example.linkup.dto.response.ConversationResponse;
 import com.example.linkup.entity.Messages;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;

@@ -202,6 +202,31 @@ public class FriendshipService {
         }).toList();
     }
 
+    public List<FriendshipResponse> getFriendWithPagingByText(int userId, int page, int size, String text) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<Friendships> friendshipsPage =
+                friendshipRepository.findFriendByUserIdAndStatusWithPageByText(userId, FriendshipStatus.FRIEND, pageable, text);
+
+        List<Users> friends = new ArrayList<>();
+
+        for (Friendships friendship : friendshipsPage) {
+            friends.add(friendship.getFriend());
+        }
+
+        return friends.stream().map(friend -> {
+            Profiles profile = profileRepository.findById(friend.getId())
+                    .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+            return FriendshipResponse.builder()
+                    .id(friend.getId())
+                    .fullName(profile.getFullName())
+                    .avatarUrl(profile.getAvatarUrl())
+                    .location(profile.getLocation())
+                    .build();
+        }).toList();
+    }
+
     public List<FriendshipResponse> getRequest() {
         var context = SecurityContextHolder.getContext();
         String username = context.getAuthentication().getName();

@@ -3,6 +3,7 @@ package com.example.linkup.controller;
 import com.example.linkup.dto.request.ApiResponse;
 import com.example.linkup.dto.request.MessageGetListConversationWithFriendsRequest;
 import com.example.linkup.dto.request.MessageRequest;
+import com.example.linkup.dto.request.SearchConversationRequest;
 import com.example.linkup.dto.response.ConversationResponse;
 import com.example.linkup.dto.response.MessageResponse;
 import com.example.linkup.service.MessageService;
@@ -68,6 +69,17 @@ public class MessageController {
 //                .result(messageService.getConversation(otherUserId))
 //                .build();
 //    }
+
+    @PostMapping("/conversation/search")
+    public ApiResponse<List<ConversationResponse>> searchConversation(
+            @RequestBody SearchConversationRequest request,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+            ) {
+        return ApiResponse.<List<ConversationResponse>>builder()
+                .result(messageService.searchConversation(request, page, size))
+                .build();
+    }
 
     @GetMapping("/conversation/{friendId}")
     public ApiResponse<List<MessageResponse>> getConversationWithFriend(

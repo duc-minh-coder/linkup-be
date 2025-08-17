@@ -52,6 +52,17 @@ public class ProfileController {
                 .build();
     }
 
+    @PostMapping("/friend/search")
+    ApiResponse<List<SearchProfileResponse>> searchFriends(
+            @RequestBody SearchProfileRequest request,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        return ApiResponse.<List<SearchProfileResponse>>builder()
+                .result(profileService.searchFriends(request, page, size))
+                .build();
+    }
+
     @GetMapping("")
     ApiResponse<List<ProfileResponse>> getAllProfile() {
         List<ProfileResponse> profilesList = profileService.getAllProfile();

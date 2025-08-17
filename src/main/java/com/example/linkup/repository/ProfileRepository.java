@@ -19,4 +19,12 @@ public interface ProfileRepository extends JpaRepository<Profiles, Integer> {
     @Query("SELECT p FROM Profiles p " +
             "WHERE LOWER(p.fullName) like LOWER(CONCAT('%', :text, '%'))")
     Page<Profiles> searchUserProfileByNameWithPage(String text, Pageable pageable);
+
+    @Query("SELECT p FROM Profiles p " +
+            "JOIN Users u ON u.id = p.userId " +
+            "JOIN Friendships f ON (f.user.id = :userId AND f.friend.id = u.id) " +
+            "OR (f.friend.id = :userId AND f.user.id = u.id) " +
+            "WHERE f.status = 'FRIEND' " +
+            "AND LOWER(p.fullName) like LOWER(CONCAT('%', :text, '%'))")
+    Page<Profiles> searchFriendsByNameWithPage(int userId, String text, Pageable pageable);
 }

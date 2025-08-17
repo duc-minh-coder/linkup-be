@@ -19,4 +19,10 @@ public interface FriendshipRepository extends JpaRepository<Friendships, KeyFrie
             "WHERE f.user.id = :userId " +
             "AND f.status = :status")
     Page<Friendships> findFriendByUserIdAndStatusWithPage(int userId, FriendshipStatus status, Pageable pageable);
+
+    @Query("SELECT f FROM Friendships f " +
+            "WHERE f.user.id = :userId " +
+            "AND LOWER(f.friend.profile.fullName) like LOWER(CONCAT('%', :text, '%'))" +
+            "AND f.status = :status")
+    Page<Friendships> findFriendByUserIdAndStatusWithPageByText(int userId, FriendshipStatus status, Pageable pageable, String text);
 }

@@ -112,6 +112,24 @@ public class ProfileService {
         ).toList();
     }
 
+    public List<SearchProfileResponse> searchFriends(SearchProfileRequest request, int page, int size) {
+        var context = SecurityContextHolder.getContext();
+        String username = context.getAuthentication().getName();
+
+        Users user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<Profiles> profilesPage =
+                profileRepository.searchFriendsByNameWithPage(user.getId(), request.getText(), pageable);
+
+        return profilesPage.map(profile -> SearchProfileResponse.builder()
+                .id(profile.getUserId())
+                .fullName(profile.getFullName())
+                .avatarUrl(profile.getAvatarUrl())
+                .build()).toList();
+    }
+
     public List<ProfileResponse> getAllProfile() {
         List<Profiles> profilesList = profileRepository.findAll();
 

@@ -3,6 +3,7 @@ package com.example.linkup.service;
 import com.example.linkup.dto.request.ChatMessage;
 import com.example.linkup.dto.request.MessageGetListConversationWithFriendsRequest;
 import com.example.linkup.dto.request.MessageRequest;
+import com.example.linkup.dto.request.SearchConversationRequest;
 import com.example.linkup.dto.response.ConversationResponse;
 import com.example.linkup.dto.response.FriendshipResponse;
 import com.example.linkup.dto.response.MessageResponse;
@@ -316,5 +317,40 @@ public class MessageService {
         }
 
         messageRepository.saveAll(messagesList);
+    }
+
+    public List<ConversationResponse> searchConversation(SearchConversationRequest request, int page, int size) {
+        var context = SecurityContextHolder.getContext();
+        String username = context.getAuthentication().getName();
+
+        Users user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        List<FriendshipResponse> listFriend = friendshipService.getFriendWithPagingByText(user.getId(), page, size, request.getText());
+
+        List<ConversationResponse> conversationList = new ArrayList<>();
+
+        for (FriendshipResponse friend : listFriend) {
+            Messages message =
+                    messageRepository.findLastMessageBetweenUsers(user.getId(), friend.getId());
+
+            if (message == null) continue;
+
+            Users otherUser = message.getSender().getId() == user.getId()
+                    ? message.getReceiver()
+                    : message.getSender();
+
+            conversationList.add(ConversationResponse.builder()
+                    .userId(otherUser.getId())
+                    .username(otherUser.getProfile().getFullName())
+                    .userAvatarUrl(otherUser.getProfile().getAvatarUrl())
+                    .lastMessage(message.getContent())
+                    .lastMessageTime(message.getCreatedTime())
+                    .userSentLast(message.getSender().getId() == user.getId())
+                    .isRead(message.isRead())
+                    .build());
+        }
+
+        return conversationList;
     }
 }
