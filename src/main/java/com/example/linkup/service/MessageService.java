@@ -83,7 +83,7 @@ public class MessageService {
         List<Messages> lastMessage = messageRepository.findLastMessageWithEachUser(user.getId());
 
         return lastMessage.stream().map(message -> {
-            // xác định vai trò ng còn lại
+            // xác dinh vai trò ng còn lại
             Users otherUser = message.getSender().getId() == user.getId()
                     ? message.getReceiver()
                     : message.getSender();

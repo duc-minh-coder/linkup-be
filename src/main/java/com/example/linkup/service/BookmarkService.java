@@ -38,7 +38,7 @@ public class BookmarkService {
     PostRepository postRepository;
     PostLikeRepository postLikeRepository;
 
-    public String updateBookmark(BookmarkRequest request) {
+    public Boolean updateBookmark(BookmarkRequest request) {
         var context = SecurityContextHolder.getContext();
         String username = context.getAuthentication().getName();
 
@@ -55,7 +55,7 @@ public class BookmarkService {
         if (existing.isPresent()) {
             bookmarkRepository.deleteById(key);
 
-            return "đã huỷ lưu";
+            return false;
         }
 
         Bookmarks bookmark = Bookmarks.builder()
@@ -67,7 +67,7 @@ public class BookmarkService {
 
         bookmarkRepository.save(bookmark);
 
-        return "đã lưu";
+        return true;
     }
 
     public List<BookmarkResponse> getBookmarkList(int page, int size) {

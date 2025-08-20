@@ -62,14 +62,6 @@ public class MessageController {
                 .build();
     }
 
-//    @GetMapping("")
-//    // chi tiết 1 cuộc hội thoại vs 1 otherUser
-//    public ApiResponse<List<MessageResponse>> getConversation(@PathVariable int otherUserId) {
-//        return ApiResponse.<List<MessageResponse>>builder()
-//                .result(messageService.getConversation(otherUserId))
-//                .build();
-//    }
-
     @PostMapping("/conversation/search")
     public ApiResponse<List<ConversationResponse>> searchConversation(
             @RequestBody SearchConversationRequest request,

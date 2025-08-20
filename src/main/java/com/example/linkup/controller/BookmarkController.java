@@ -19,8 +19,8 @@ public class BookmarkController {
     BookmarkService bookmarkService;
 
     @PostMapping("/create")
-    public ApiResponse<String> updateBookmark(@RequestBody BookmarkRequest request) {
-        return ApiResponse.<String>builder()
+    public ApiResponse<Boolean> updateBookmark(@RequestBody BookmarkRequest request) {
+        return ApiResponse.<Boolean>builder()
                 .result(bookmarkService.updateBookmark(request))
                 .build();
     }
